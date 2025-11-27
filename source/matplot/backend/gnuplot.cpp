@@ -39,7 +39,7 @@ static size_t gnuplot_pipe_capacity(FILE *) {
 
 #endif // MATPLOT_HAS_FBUFSIZE
 
-namespace matplot::backend {
+namespace matplot{ namespace backend {
     bool gnuplot::consumes_gnuplot_commands() { return true; }
 
     gnuplot::gnuplot() {
@@ -72,7 +72,7 @@ namespace matplot::backend {
 
         // Open the gnuplot pipe_
         int perr;
-        if constexpr (windows_should_persist_by_default) {
+        if  (windows_should_persist_by_default) {
             perr = pipe_.open("gnuplot --persist");
         } else {
             perr = pipe_.open("gnuplot");
@@ -88,7 +88,7 @@ namespace matplot::backend {
     }
 
     gnuplot::~gnuplot() {
-        if constexpr (dont_let_it_close_too_fast) {
+        if  (dont_let_it_close_too_fast) {
             auto time_since_last_flush =
                 std::chrono::high_resolution_clock::now() - last_flush_;
             if (time_since_last_flush < std::chrono::seconds(5)) {
@@ -132,7 +132,7 @@ namespace matplot::backend {
         // check terminal for that extension
         SV_CONSTEXPR auto exts = extension_terminal();
         auto it = std::find_if(exts.begin(), exts.end(),
-                               [&](const auto &e) { return e.first == ext; });
+                               [&](const std::pair<std::string, std::string> &e) { return e.first == ext; });
 
         // if there is a terminal
         if (it != exts.end()) {
@@ -162,7 +162,7 @@ namespace matplot::backend {
 
         // Check if file format is valid
         SV_CONSTEXPR auto exts = extension_terminal();
-        auto it = std::find_if(exts.begin(), exts.end(), [&](const auto &e) {
+        auto it = std::find_if(exts.begin(), exts.end(), [&](const std::pair<std::string, std::string> &e) {
             return e.second == format;
         });
 
@@ -277,11 +277,11 @@ namespace matplot::backend {
     bool gnuplot::render_data() { return flush_commands(); }
 
     bool gnuplot::flush_commands() {
-        if constexpr (dont_let_it_close_too_fast) {
+        if  (dont_let_it_close_too_fast) {
             last_flush_ = std::chrono::high_resolution_clock::now();
         }
         pipe_.flush("\n");
-        if constexpr (trace_commands) {
+        if (trace_commands) {
             std::cout << "\n\n\n\n" << std::endl;
         }
         return true;
@@ -306,7 +306,7 @@ namespace matplot::backend {
         // proc_write(&pipe_, "; ");
         pipe_.write("\n");
         bytes_in_pipe_ += command.size();
-        if constexpr (trace_commands) {
+        if (trace_commands) {
             std::cout << command << std::endl;
         }
     }
@@ -318,10 +318,11 @@ namespace matplot::backend {
     }
 
     /// returns the next word in text after prefix terminated with white space.
-    static std::string_view word_after(std::string_view text, std::string_view prefix)
+    static matplot::string_view word_after(matplot::string_view text, matplot::string_view prefix)
     {
         auto res = text.substr(0,0);
-        if (auto b = text.find(prefix); b != std::string_view::npos) {
+        auto b = text.find(prefix);
+        if ( b != matplot::string_view::npos) {
             b += prefix.length();
             while (b < text.length() && std::isspace(text[b]))
                 ++b; // skip white space before word
@@ -347,14 +348,14 @@ namespace matplot::backend {
         return terminal_type;
     }
 
-    bool gnuplot::terminal_is_available(std::string_view term) {
+    bool gnuplot::terminal_is_available(matplot::string_view term) {
         std::string msg = run_and_get_output("gnuplot -e \"set terminal " +
                 std::string{term} + "\" 2>&1");
         return msg.empty();
     }
 
     template <typename T>
-    void convert_to(std::string_view text, T& value) {
+    void convert_to(matplot::string_view text, T& value) {
         std::from_chars(text.data(), text.data() + text.length(), value);
     }
 
@@ -362,16 +363,16 @@ namespace matplot::backend {
         constexpr auto version_zero = std::make_tuple(0, 0, 0);
         static auto version = version_zero;
         if (version == version_zero) { // unknown version
-            const auto version_str = run_and_get_output("gnuplot --version 2>&1");
-            // gnuplot version_str example: "5.2 patchlevel 6"
-            const auto major_minor = word_after(version_str, "gnuplot"); // "5.2"
-            const auto minor = word_after(major_minor, "."); // "2"
-            const auto patch = word_after(version_str, "patchlevel"); // "6"
-            if (!major_minor.empty() && !minor.empty() && !patch.empty()) {
-                convert_to(major_minor, std::get<0>(version));
-                convert_to(minor, std::get<1>(version));
-                convert_to(patch, std::get<2>(version));
-            }
+            // const auto version_str = run_and_get_output("gnuplot --version 2>&1");
+            // // gnuplot version_str example: "5.2 patchlevel 6"
+            // const auto major_minor = word_after(version_str, "gnuplot"); // "5.2"
+            // const auto minor = word_after(major_minor, "."); // "2"
+            // const auto patch = word_after(version_str, "patchlevel"); // "6"
+            // if (!major_minor.empty() && !minor.empty() && !patch.empty()) {
+            //     convert_to(major_minor, std::get<0>(version));
+            //     convert_to(minor, std::get<1>(version));
+            //     convert_to(patch, std::get<2>(version));
+            // }
             if (version == version_zero) // still unknown
                 version = {5, 2, 6}; // assume by convention
         }
@@ -389,7 +390,7 @@ namespace matplot::backend {
     }
 
     bool gnuplot::terminal_has_title_option(const std::string &t) {
-        SV_CONSTEXPR std::string_view whitelist[] = {
+        SV_CONSTEXPR matplot::string_view whitelist[] = {
             "qt", "aqua", "caca", "canvas", "windows", "wxt", "x11"};
         return std::find(std::begin(whitelist), std::end(whitelist), t) !=
                std::end(whitelist);
@@ -399,7 +400,7 @@ namespace matplot::backend {
         // Terminals that have the size option *in the way we expect it to work*
         // This includes only the size option with {width, height} and not
         // the size option for cropping or scaling
-        SV_CONSTEXPR std::string_view whitelist[] = {
+        SV_CONSTEXPR matplot::string_view whitelist[] = {
             "qt",       "aqua",    "caca", "canvas", "eepic",    "emf",
             "gif",      "jpeg",    "pbm",  "png",    "pngcairo", "sixelgd",
             "tkcanvas", "windows", "wxt",  "svg"};
@@ -408,13 +409,13 @@ namespace matplot::backend {
     }
 
     bool gnuplot::terminal_has_position_option(const std::string &t) {
-        SV_CONSTEXPR std::string_view whitelist[] = {"qt", "windows", "wxt"};
+        SV_CONSTEXPR matplot::string_view whitelist[] = {"qt", "windows", "wxt"};
         return std::find(std::begin(whitelist), std::end(whitelist), t) !=
                std::end(whitelist);
     }
 
     bool gnuplot::terminal_has_enhanced_option(const std::string &t) {
-        SV_CONSTEXPR std::string_view whitelist[] = {
+        SV_CONSTEXPR matplot::string_view whitelist[] = {
             "canvas",     "postscript", "qt",       "aqua",     "caca",
             "canvas",     "dumb",       "emf",      "enhanced", "jpeg",
             "pdf",        "pdfcairo",   "pm",       "png",      "pngcairo",
@@ -425,7 +426,7 @@ namespace matplot::backend {
     }
 
     bool gnuplot::terminal_has_color_option(const std::string &t) {
-        SV_CONSTEXPR std::string_view whitelist[] = {
+        SV_CONSTEXPR matplot::string_view whitelist[] = {
             "postscript", "aifm",     "caca",     "cairolatex", "context",
             "corel",      "eepic",    "emf",      "epscairo",   "epslatex",
             "fig",        "lua tikz", "mif",      "mp",         "pbm",
@@ -440,7 +441,7 @@ namespace matplot::backend {
         // and terminals for which we want to use only the default fonts
         // We prefer a blacklist because it's better to get a warning
         // in a false positive than remove the fonts in a false negative.
-        SV_CONSTEXPR std::string_view blacklist[] = {
+        SV_CONSTEXPR matplot::string_view blacklist[] = {
             "dxf",      "eepic",   "emtex",   "hpgl",    "latex",
             "mf",       "pcl5",    "pslatex", "pstex",   "pstricks",
             "qms",      "tek40xx", "tek410x", "texdraw", "tkcanvas",
@@ -457,4 +458,4 @@ namespace matplot::backend {
                std::end(blacklist);
     }
 
-} // namespace matplot::backend
+}} // namespace matplot::backend

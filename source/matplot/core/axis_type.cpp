@@ -115,7 +115,7 @@ namespace matplot {
         return *this;
     }
 
-    class axis_type &axis_type::color(std::string_view c) {
+    class axis_type &axis_type::color(matplot::string_view c) {
         color(string_to_color(c));
         return *this;
     }
@@ -126,7 +126,7 @@ namespace matplot {
 
     const std::string &axis_type::label() const { return label_; }
 
-    class axis_type &axis_type::label(std::string_view label) {
+    class axis_type &axis_type::label(matplot::string_view label) {
         label_ = label;
         touch();
         return *this;
@@ -161,7 +161,7 @@ namespace matplot {
     }
 
     class axis_type &
-    axis_type::tick_label_format(std::string_view tick_label_format) {
+    axis_type::tick_label_format(matplot::string_view tick_label_format) {
         if (tick_label_format == "usd") {
             tick_label_format_ = "$%.2f";
         } else if (tick_label_format == "degrees") {
@@ -352,7 +352,7 @@ namespace matplot {
 
     const std::string &axis_type::label_weight() const { return label_weight_; }
 
-    class axis_type &axis_type::label_weight(std::string_view label_weight) {
+    class axis_type &axis_type::label_weight(matplot::string_view label_weight) {
         label_weight_ = label_weight;
         touch();
         return *this;

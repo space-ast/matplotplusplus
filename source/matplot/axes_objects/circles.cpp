@@ -37,7 +37,7 @@ namespace matplot {
         return str;
     }
 
-    std::string circles::legend_string(std::string_view title) {
+    std::string circles::legend_string(matplot::string_view title) {
         return " keyentry with circles linecolor var lw 4 fillstyle solid "
                "border linecolor 'black' title \"" +
                escape(title) + "\"";

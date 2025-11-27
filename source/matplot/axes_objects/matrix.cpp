@@ -20,7 +20,8 @@ namespace matplot {
         always_hide_labels_ = false;
         x_ = y_ = 1;
         parent_->y_axis().reverse(true);
-        auto [hi, wi] = size(matrices_[0]);
+        size_t hi, wi;
+        std::tie(hi, wi) = size(matrices_[0]);
         h_ = static_cast<double>(hi);
         w_ = static_cast<double>(wi);
     }
@@ -32,15 +33,16 @@ namespace matplot {
                    const std::vector<std::vector<double>> &alpha_channel)
         : axes_object(parent),
           matrices_(alpha_channel.empty()
-                        ? std::vector{red_channel, green_channel, blue_channel}
-                        : std::vector{red_channel, green_channel, blue_channel,
+                        ? std::vector<std::vector<std::vector<double>>>{red_channel, green_channel, blue_channel}
+                        : std::vector<std::vector<std::vector<double>>>{red_channel, green_channel, blue_channel,
                                       alpha_channel}) {
         // Matrix seems to be an image
         // Leave the xlim as it is
         parent_->y_axis().reverse(true);
         always_hide_labels_ = true;
         x_ = y_ = 1;
-        auto [hi, wi] = size(matrices_[0]);
+        size_t hi, wi;
+        std::tie(hi, wi) = size(matrices_[0]);
         h_ = static_cast<double>(hi);
         w_ = static_cast<double>(wi);
     }
@@ -51,7 +53,8 @@ namespace matplot {
         parent_->y_axis().reverse(true);
         always_hide_labels_ = true;
         x_ = y_ = 1;
-        auto [hi, wi] = size(matrices_[0]);
+        size_t hi, wi;
+        std::tie(hi, wi) = size(matrices_[0]);
         h_ = static_cast<double>(hi);
         w_ = static_cast<double>(wi);
     }
@@ -62,10 +65,10 @@ namespace matplot {
                    const image_channel_t &alpha_channel)
         : axes_object(parent),
           matrices_(alpha_channel.empty()
-                        ? std::vector{to_vector_2d(red_channel),
+                        ? std::vector<std::vector<std::vector<double>>>{to_vector_2d(red_channel),
                                       to_vector_2d(green_channel),
                                       to_vector_2d(blue_channel)}
-                        : std::vector{to_vector_2d(red_channel),
+                        : std::vector<std::vector<std::vector<double>>>{to_vector_2d(red_channel),
                                       to_vector_2d(green_channel),
                                       to_vector_2d(blue_channel),
                                       to_vector_2d(alpha_channel)}) {
@@ -73,7 +76,8 @@ namespace matplot {
         parent_->y_axis().reverse(true);
         always_hide_labels_ = true;
         x_ = y_ = 1;
-        auto [hi, wi] = size(matrices_[0]);
+        size_t hi, wi;
+        std::tie(hi, wi) = size(matrices_[0]);
         h_ = static_cast<double>(hi);
         w_ = static_cast<double>(wi);
     }
@@ -84,7 +88,8 @@ namespace matplot {
         parent_->y_axis().reverse(true);
         always_hide_labels_ = true;
         x_ = y_ = 1;
-        auto [hi, wi] = size(matrices_[0]);
+        size_t hi, wi;
+        std::tie(hi, wi) = size(matrices_[0]);
         h_ = static_cast<double>(hi);
         w_ = static_cast<double>(wi);
     }
@@ -171,7 +176,8 @@ namespace matplot {
         ss << std::fixed;
         double x_width_ = x_width();
         double y_width_ = y_width();
-        const auto &[cb_min, cb_max] = parent_->color_box_range();
+        double cb_min, cb_max;
+        std::tie(cb_min, cb_max) = parent_->color_box_range();
         bool use_cb_range = cb_min != cb_max;
         for (size_t i = 0; i < matrix_.size(); ++i) {
             for (size_t j = 0; j < matrix_[i].size(); ++j) {
@@ -277,7 +283,8 @@ namespace matplot {
         std::stringstream ss;
         ss.precision(10);
         ss << std::fixed;
-        auto [h, w] = size(matrices_[0]);
+        size_t h, w;
+        std::tie(h, w) = size(matrices_[0]);
         double x_width_ = x_width();
         double y_width_ = y_width();
         for (size_t i = 0; i < w; ++i) {

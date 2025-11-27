@@ -10,8 +10,8 @@ namespace matplot {
         : string_function(parent, "x", "") {}
 
     string_function::string_function(class axes_type *parent,
-                                     std::string_view equation,
-                                     std::string_view line_spec)
+                                     matplot::string_view equation,
+                                     matplot::string_view line_spec)
         : line(parent, {}, line_spec), equation_(equation) {}
 
     std::string string_function::plot_string() {
@@ -71,7 +71,7 @@ namespace matplot {
     const std::string &string_function::equation() const { return equation_; }
 
     class string_function &
-    string_function::equation(std::string_view equation) {
+    string_function::equation(matplot::string_view equation) {
         equation_ = equation;
         parent()->draw();
         return *this;

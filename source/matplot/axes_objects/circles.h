@@ -37,7 +37,7 @@ namespace matplot {
       public /* mandatory virtual functions */:
         // std::string set_variables_string() override;
         std::string plot_string() override;
-        std::string legend_string(std::string_view title) override;
+        std::string legend_string(matplot::string_view title) override;
         std::string data_string() override;
         // std::string unset_variables_string() override;
         bool requires_colormap() override;

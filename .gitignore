@@ -60,3 +60,4 @@ gh-md-toc
 *.out
 *.app
 
+.xmake

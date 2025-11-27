@@ -127,77 +127,77 @@ namespace matplot {
     axes_handle nexttile(size_t index);
 
     MATPLOT_EXPORTS
-    void title(std::string_view str);
+    void title(matplot::string_view str);
     MATPLOT_EXPORTS
-    void title(std::string_view str, const color_array &c);
+    void title(matplot::string_view str, const color_array &c);
 
     template <class COLOR_TYPE>
-    void title(std::string_view str, COLOR_TYPE c) {
+    void title(matplot::string_view str, COLOR_TYPE c) {
         title(str, to_array(c));
     }
 
     MATPLOT_EXPORTS
-    void title(axes_handle ax, std::string_view str);
+    void title(axes_handle ax, matplot::string_view str);
     MATPLOT_EXPORTS
-    void title(axes_handle ax, std::string_view str, const color_array &c);
+    void title(axes_handle ax, matplot::string_view str, const color_array &c);
 
     template <class COLOR_TYPE>
-    void title(axes_handle ax, std::string_view str, COLOR_TYPE c) {
+    void title(axes_handle ax, matplot::string_view str, COLOR_TYPE c) {
         title(ax, str, to_array(c));
     }
 
     MATPLOT_EXPORTS
-    void title(legend_handle lgd, std::string_view str);
+    void title(legend_handle lgd, matplot::string_view str);
 
     MATPLOT_EXPORTS
-    void sgtitle(std::string_view str);
+    void sgtitle(matplot::string_view str);
     MATPLOT_EXPORTS
-    void sgtitle(std::string_view str, const color_array &c);
+    void sgtitle(matplot::string_view str, const color_array &c);
 
     template <class COLOR_TYPE>
-    void sgtitle(std::string_view str, COLOR_TYPE c) {
+    void sgtitle(matplot::string_view str, COLOR_TYPE c) {
         sgtitle(str, to_array(c));
     }
 
     MATPLOT_EXPORTS
-    void sgtitle(axes_handle ax, std::string_view str);
+    void sgtitle(axes_handle ax, matplot::string_view str);
     MATPLOT_EXPORTS
-    void sgtitle(axes_handle ax, std::string_view str, const color_array &c);
+    void sgtitle(axes_handle ax, matplot::string_view str, const color_array &c);
 
     template <class COLOR_TYPE>
-    void sgtitle(axes_handle ax, std::string_view str, COLOR_TYPE c) {
+    void sgtitle(axes_handle ax, matplot::string_view str, COLOR_TYPE c) {
         sgtitle(ax, str, to_array(c));
     }
 
     MATPLOT_EXPORTS
-    void xlabel(std::string_view str);
+    void xlabel(matplot::string_view str);
     MATPLOT_EXPORTS
-    void xlabel(axes_handle ax, std::string_view str);
+    void xlabel(axes_handle ax, matplot::string_view str);
     MATPLOT_EXPORTS
-    void ylabel(std::string_view str);
+    void ylabel(matplot::string_view str);
     MATPLOT_EXPORTS
-    void ylabel(axes_handle ax, std::string_view str);
+    void ylabel(axes_handle ax, matplot::string_view str);
     MATPLOT_EXPORTS
-    void y2label(std::string_view str);
+    void y2label(matplot::string_view str);
     MATPLOT_EXPORTS
-    void y2label(axes_handle ax, std::string_view str);
+    void y2label(axes_handle ax, matplot::string_view str);
     MATPLOT_EXPORTS
-    void zlabel(std::string_view str);
+    void zlabel(matplot::string_view str);
     MATPLOT_EXPORTS
-    void zlabel(axes_handle ax, std::string_view str);
+    void zlabel(axes_handle ax, matplot::string_view str);
 
     MATPLOT_EXPORTS
-    void xtickformat(std::string_view str);
+    void xtickformat(matplot::string_view str);
     MATPLOT_EXPORTS
-    void xtickformat(axes_handle ax, std::string_view str);
+    void xtickformat(axes_handle ax, matplot::string_view str);
     MATPLOT_EXPORTS
-    void ytickformat(std::string_view str);
+    void ytickformat(matplot::string_view str);
     MATPLOT_EXPORTS
-    void ytickformat(axes_handle ax, std::string_view str);
+    void ytickformat(axes_handle ax, matplot::string_view str);
     MATPLOT_EXPORTS
-    void ztickformat(std::string_view str);
+    void ztickformat(matplot::string_view str);
     MATPLOT_EXPORTS
-    void ztickformat(axes_handle ax, std::string_view str);
+    void ztickformat(axes_handle ax, matplot::string_view str);
 
     MATPLOT_EXPORTS
     std::string xtickformat();
@@ -380,14 +380,14 @@ namespace matplot {
     // Hackfix for a compiler bug in MSVC
     namespace {
         template <typename... Args>
-        legend_handle legend(axes_handle ax, std::string_view name,
+        legend_handle legend(axes_handle ax, matplot::string_view name,
                              Args const &... next_name) {
             std::vector<std::string> legends = {std::string(name), std::string(next_name)...};
             return ::matplot::legend(ax, legends);
         }
 
         template <typename... Args>
-        legend_handle legend(std::string_view name,
+        legend_handle legend(matplot::string_view name,
                              Args const &... next_name) {
             return legend(gca(), name, next_name...);
         }

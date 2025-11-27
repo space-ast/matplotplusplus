@@ -35,7 +35,7 @@ namespace matplot {
         throw std::logic_error("colors::to_string: could not find a string for color");
     }
 
-    matplot::color string_to_color(std::string_view s) {
+    matplot::color string_to_color(matplot::string_view s) {
         if (s.size() == 1) {
             return char_to_color(s[0]);
         } else if (s == "blue") {
@@ -127,7 +127,7 @@ namespace matplot {
         throw std::logic_error("colors::to_array: could not find an array for color");
     }
 
-    std::array<float, 4> to_array(std::string_view s) {
+    std::array<float, 4> to_array(matplot::string_view s) {
         if (s.size() == 1) {
             return to_array(char_to_color(s[0]));
         } else if (s == "blue") {

@@ -67,7 +67,7 @@ namespace matplot {
       public /* xlim object virtual functions */:
         // std::string set_variables_string() override;
         std::string plot_string() override;
-        std::string legend_string(std::string_view title) override;
+        std::string legend_string(matplot::string_view title) override;
         std::string data_string() override;
         // std::string unset_variables_string() override;
         double xmax() override;
@@ -142,7 +142,7 @@ namespace matplot {
         const color_array &face_color() const;
         class histogram &face_color(const color_array &face_color);
         class histogram &face_color(std::initializer_list<float> face_color);
-        class histogram &face_color(std::string_view color);
+        class histogram &face_color(matplot::string_view color);
 
         class histogram &face_alpha(float alpha);
         class histogram &edge_alpha(float alpha);
@@ -153,7 +153,7 @@ namespace matplot {
         const color_array &edge_color() const;
         class histogram &edge_color(const color_array &edge_color);
         class histogram &edge_color(std::initializer_list<float> face_color);
-        class histogram &edge_color(std::string_view edge_color);
+        class histogram &edge_color(matplot::string_view edge_color);
 
         const line_spec &edge_style() const;
         class histogram &edge_style(const line_spec &edge_style);

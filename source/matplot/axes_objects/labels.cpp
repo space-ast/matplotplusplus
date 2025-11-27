@@ -72,9 +72,20 @@ namespace matplot {
         // if the ranges are larger than that, we reduce the font size
         double font_size_factor = 1.0;
         if (!absolute_size_) {
-            auto [xmin, xmax, ymin, ymax] = parent_->child_limits();
+            double xmin, xmax, ymin, ymax;
+            auto ret = parent_->child_limits();
+            xmin = ret[0];
+            xmax = ret[1];
+            ymin = ret[2];
+            ymax = ret[3];
+
+
             if (parent_->x_axis().limits_mode_manual()) {
-                auto [axmin, axmax] = parent_->x_axis().limits();
+                double axmin, axmax;
+                auto ret = parent_->x_axis().limits();
+                axmin = ret[0];
+                axmax = ret[1];
+
                 if (std::isfinite(axmin)) {
                     xmin = std::min(xmin, axmin);
                 }
@@ -83,7 +94,10 @@ namespace matplot {
                 }
             }
             if (parent_->y_axis().limits_mode_manual()) {
-                auto [aymin, aymax] = parent_->y_axis().limits();
+                double aymin, aymax;
+                auto ret = parent_->y_axis().limits();
+                aymin = ret[0];
+                aymax = ret[1];
                 if (std::isfinite(aymin)) {
                     ymin = std::min(ymin, aymin);
                 }
@@ -205,7 +219,7 @@ namespace matplot {
 
     const std::string &labels::font() const { return font_; }
 
-    class labels &labels::font(std::string_view font) {
+    class labels &labels::font(matplot::string_view font) {
         font_ = font;
         touch();
         return *this;

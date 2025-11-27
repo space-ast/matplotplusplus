@@ -27,7 +27,7 @@
 #endif
 
 namespace matplot {
-    bool iequals(std::string_view str1, std::string_view str2) {
+    bool iequals(matplot::string_view str1, matplot::string_view str2) {
         if (str1.size() != str2.size()) {
             return false;
         } else {
@@ -40,12 +40,12 @@ namespace matplot {
         return true;
     }
 
-    bool is_true(std::string_view str) {
+    bool is_true(matplot::string_view str) {
         return iequals(str, "on") || iequals(str, "true") ||
                iequals(str, "yes");
     }
 
-    bool is_false(std::string_view str) {
+    bool is_false(matplot::string_view str) {
         return iequals(str, "off") || iequals(str, "false") ||
                iequals(str, "no");
     }
@@ -56,7 +56,7 @@ namespace matplot {
         return res;
     }
 
-    std::string escape(std::string_view label) {
+    std::string escape(matplot::string_view label) {
         std::string escaped;
         escaped.reserve(label.size());
 
@@ -199,7 +199,9 @@ namespace matplot {
         if (x.empty()) {
             return std::make_pair(min(x), max(x));
         } else {
-            auto [min_it, max_it] = std::minmax_element(x.begin(), x.end());
+            auto ret = std::minmax_element(x.begin(), x.end());
+            auto min_it = ret.first;
+            auto max_it = ret.second;
             return std::make_pair(*min_it, *max_it);
         }
     }
@@ -565,7 +567,9 @@ namespace matplot {
     std::tuple<vector_2d, vector_2d, vector_2d> peaks(size_t N) {
         std::vector<double> x = linspace(-3., +3., N);
         std::vector<double> y = linspace(-3., +3., N);
-        auto [X, Y] = meshgrid(x, y);
+        auto ret = meshgrid(x, y);
+        auto X = ret.first;
+        auto Y = ret.second;
         return std::make_tuple(X, Y, peaks(X, Y));
     }
 
@@ -663,7 +667,8 @@ namespace matplot {
         if (A.empty()) {
             return image_channels_t{};
         }
-        auto [h, w] = size(A[0]);
+        size_t h, w;
+        std::tie(h, w) = size(A[0]);
         return imresize(A, static_cast<size_t>(h * scale), static_cast<size_t>(w * scale), m);
     }
 
@@ -732,7 +737,8 @@ namespace matplot {
         if (image.size() < 3) {
             image.emplace_back(image[0]);
         }
-        auto [h, w] = size(image[0]);
+        size_t h, w;
+        std::tie(h, w) = size(image[0]);
         if (image.size() < 4) {
             image.emplace_back(image_channel_t(h, image_row_t(w, 255)));
         }
@@ -752,7 +758,7 @@ namespace matplot {
                         ((t1 + t2) - radius_sq) / max_t_minus_radius;
                     norm_dist_from_r = pow(norm_dist_from_r, exponent);
                     alpha_channel[i][j] = static_cast<
-                        std::decay_t<decltype(alpha_channel[i][j])>>(
+                        std::decay<decltype(alpha_channel[i][j])>::type>(
                         255. * (1. - norm_dist_from_r));
                 }
             }
@@ -770,8 +776,8 @@ namespace matplot {
         return z2;
     }
 
-    std::vector<std::string> tokenize(std::string_view text,
-                                      std::string_view delimiters) {
+    std::vector<std::string> tokenize(matplot::string_view text,
+                                      matplot::string_view delimiters) {
         std::vector<std::string> tokens;
         size_t pos = 0;
         while ((pos = text.find_first_not_of(delimiters, pos)) !=
@@ -808,8 +814,11 @@ namespace matplot {
         }
 
         // sort tokens by frequency
-        std::multimap<size_t, std::string, std::greater<>> frequency_word;
-        for (const auto &[token, count] : word_frequency) {
+        std::multimap<size_t, std::string, std::greater<size_t>> frequency_word;
+        for (const auto& iter : word_frequency)
+        {
+            auto& token = iter.first;
+            auto& count = iter.second;
             frequency_word.emplace(count, token);
         }
 
@@ -817,7 +826,9 @@ namespace matplot {
         std::vector<std::string> unique_tokens;
         std::vector<size_t> token_count;
         size_t i = 0;
-        for (const auto &[count, token] : frequency_word) {
+        for (const auto &iter : frequency_word) {
+            auto& count = iter.first;
+            auto& token = iter.second;
             unique_tokens.emplace_back(token);
             token_count.emplace_back(count);
             ++i;
@@ -831,9 +842,9 @@ namespace matplot {
     }
 
     std::pair<std::vector<std::string>, std::vector<size_t>>
-    wordcount(std::string_view text,
+    wordcount(matplot::string_view text,
               const std::vector<std::string> &black_list,
-              std::string_view delimiters, size_t max_cloud_size) {
+              matplot::string_view delimiters, size_t max_cloud_size) {
         auto tokens = tokenize(text, delimiters);
         return wordcount(tokens, black_list, max_cloud_size);
     }

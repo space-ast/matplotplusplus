@@ -27,7 +27,7 @@ namespace matplot {
     std::string to_string(matplot::color c);
 
     MATPLOT_EXPORTS
-    matplot::color string_to_color(std::string_view s);
+    matplot::color string_to_color(matplot::string_view s);
 
     MATPLOT_EXPORTS
     matplot::color char_to_color(char c);
@@ -60,7 +60,7 @@ namespace matplot {
     }
 
     MATPLOT_EXPORTS
-    std::array<float, 4> to_array(std::string_view str_color);
+    std::array<float, 4> to_array(matplot::string_view str_color);
 
     MATPLOT_EXPORTS
     std::string to_string(const std::array<float, 4> &c);

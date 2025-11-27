@@ -101,14 +101,16 @@ int common_pipe::close(int *exit_code)
     fclose(file_);
     file_ = nullptr;
     // Wait for the process to finish
-    if (auto r = WaitForSingleObject(hProcess, INFINITE); r != WAIT_OBJECT_0) {
+    auto r = WaitForSingleObject(hProcess, INFINITE);
+    if (r != WAIT_OBJECT_0) {
         CloseHandle(hThread);
         CloseHandle(hProcess);
         return ECHILD;
     }
     // Retrieve the exit code
     if (exit_code != nullptr) {
-        if (BOOL r = GetExitCodeProcess(hProcess, (LPDWORD)exit_code); !r) {
+        BOOL r = GetExitCodeProcess(hProcess, (LPDWORD)exit_code);
+        if (!r) {
             auto err = GetLastError();
             CloseHandle(hThread);
             CloseHandle(hProcess);
@@ -205,29 +207,34 @@ ipipe::ipipe() = default; // starting with C++20 could be in-class
 
 opipe::opipe() = default; // starting with C++20 could be in-class
 
-int opipe::write(std::string_view data)
+int opipe::write(matplot::string_view data)
 {
-    constexpr auto CSIZE = sizeof(std::string_view::value_type);
+    constexpr auto CSIZE = sizeof(matplot::string_view::value_type);
     if (!opened())
         return report(EINVAL, "opipe::write");
-    if (auto sz = std::fwrite(data.data(), CSIZE, data.length(), file_);
-        sz != data.size()) {
-        if (auto err = std::ferror(file_); err != 0)
+    auto sz = std::fwrite(data.data(), CSIZE, data.length(), file_);
+    if (sz != data.size()) {
+        auto err = std::ferror(file_);
+        if (err != 0)
             return report(EIO, "fwrite error");
-        if (auto err = std::feof(file_); err != 0)
+        err = std::feof(file_); 
+        if (err != 0)
             return report(EIO, "fwrite eof");
     }
     return 0;
 }
 
-int opipe::flush(std::string_view data)
+int opipe::flush(matplot::string_view data)
 {
     if (!opened())
         return report(EINVAL, "opipe::flush");
-    if (!data.empty())
-        if (auto err = write(data); err != 0)
+    if (!data.empty()){
+        auto err = write(data); 
+        if (err != 0)
             return report(err, "opipe::write");
-    if (auto res = std::fflush(file_); res != 0)
+    }
+    auto res = std::fflush(file_); 
+    if (res != 0)
         return report(errno, "fflush");
     return 0;
 }
@@ -252,7 +259,8 @@ int ipipe::read(std::string &data)
 int shell_write(const std::string &cmd, std::string &data)
 {
     auto pipe = opipe{};
-    if (auto err = pipe.open(cmd); err != 0)
+    auto err = pipe.open(cmd); 
+    if (err != 0)
         return err;
     return pipe.write(data);
 }
@@ -260,7 +268,8 @@ int shell_write(const std::string &cmd, std::string &data)
 int shell_read(const std::string &cmd, std::string &data)
 {
     auto pipe = ipipe{};
-    if (auto err = pipe.open(cmd); err != 0)
+    auto err = pipe.open(cmd); 
+    if (err != 0)
         return err;
     return pipe.read(data);
 }
