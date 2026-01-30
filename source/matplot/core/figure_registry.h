@@ -30,6 +30,11 @@ namespace matplot {
         /// Take default mode from backend?
         return figure<BACKEND>(false);
     }
+    MATPLOT_EXPORTS
+    figure_handle figure(bool quiet_mode = false);
+    
+    MATPLOT_EXPORTS
+    figure_handle figure(size_t figure_index, bool quiet_mode = false);
 
     /// \brief Set the current figure
     MATPLOT_EXPORTS

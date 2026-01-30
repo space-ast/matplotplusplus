@@ -1982,8 +1982,10 @@ namespace matplot {
         double zmin = z[0][0];
         double zmax = z[0][0];
         for (const auto &z_row : z) {
-            auto [minit, maxit] =
+            auto ret =
                 std::minmax_element(z_row.begin(), z_row.end());
+            auto minit = ret.first;
+            auto maxit = ret.second;
             if (*minit < zmin) {
                 zmin = *minit;
             }
@@ -1997,15 +1999,19 @@ namespace matplot {
 
     std::vector<contour_line_type> contourc(const vector_2d &z,
                                             const vector_1d &levels) {
-        auto [x, y] = meshgrid(iota(1., 1., static_cast<double>(z[0].size())),
+        auto ret = meshgrid(iota(1., 1., static_cast<double>(z[0].size())),
                                iota(1., 1., static_cast<double>(z.size())));
+        auto& x = ret.first;
+        auto& y = ret.second;
         return contourc(x, y, z, levels);
     }
 
     std::vector<contour_line_type> contourc(const vector_2d &z,
                                             size_t n_levels) {
-        auto [x, y] = meshgrid(iota(1., 1., static_cast<double>(z[0].size())),
+        auto ret = meshgrid(iota(1., 1., static_cast<double>(z[0].size())),
                                iota(1., 1., static_cast<double>(z.size())));
+        auto& x = ret.first;
+        auto& y = ret.second;
         return contourc(x, y, z, n_levels);
     }
 

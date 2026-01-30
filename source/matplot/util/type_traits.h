@@ -21,7 +21,6 @@ namespace matplot {
         enum { value = sizeof(check<C>(0)) == sizeof(true_type) };
     };
 
-    template <typename C> constexpr bool is_iterable_v = is_iterable<C>::value;
 
     template <typename C> struct has_value_type {
         typedef long false_type;
@@ -34,8 +33,6 @@ namespace matplot {
         enum { value = sizeof(check<C>(0)) == sizeof(true_type) };
     };
 
-    template <typename C>
-    constexpr bool has_value_type_v = has_value_type<C>::value;
 
     template <typename C> struct has_iterable_value_type {
         typedef long false_type;
@@ -50,51 +47,40 @@ namespace matplot {
         enum { value = sizeof(check<C>(0)) == sizeof(true_type) };
     };
 
-    template <typename C>
-    constexpr bool has_iterable_value_type_v =
-        has_iterable_value_type<C>::value;
 
     // Something like std::vector<double>
     template <class C>
     struct is_iterable_value
         : public std::integral_constant<
-              bool, is_iterable_v<C> && !has_iterable_value_type_v<C>> {};
+              bool, is_iterable<C>::value && !has_iterable_value_type<C>::value> {};
 
-    template <typename C>
-    constexpr bool is_iterable_value_v = is_iterable_value<C>::value;
 
     // Something like std::vector<std::vector<double>>
     template <class C>
     struct is_iterable_iterable
         : public std::integral_constant<
-              bool, is_iterable_v<C> && has_iterable_value_type_v<C>> {};
-
-    template <typename C>
-    constexpr bool is_iterable_iterable_v = is_iterable_iterable<C>::value;
+              bool, is_iterable<C>::value && has_iterable_value_type<C>::value> {};
 
     template <class T>
     using is_string =
         std::integral_constant<bool,
-                               std::is_same_v<std::decay_t<T>, std::string> &&
-                                   std::is_convertible_v<T, std::string>>;
+                               std::is_same<typename std::decay<T>::type, std::string>::value &&
+                                   std::is_convertible<T, std::string>::value>;
 
-    template <typename C> constexpr bool is_string_v = is_string<C>::value;
 
     template <typename> struct is_pair : std::false_type {};
 
     template <typename T, typename U>
     struct is_pair<std::pair<T, U>> : std::true_type {};
 
-    template <typename T> constexpr bool is_pair_v = is_pair<T>::value;
 
     template <class C>
     struct is_iterable_pair
         : public std::integral_constant<
-              bool, is_iterable_v<C> && !has_iterable_value_type_v<C> &&
-                        is_pair_v<typename C::value_type>> {};
+              bool, is_iterable<C>::value && !has_iterable_value_type<C>::value &&
+                        is_pair<typename C::value_type>::value> {};
 
-    template <typename C>
-    constexpr bool is_iterable_pair_v = is_iterable_pair<C>::value;
+
 
     template <typename> struct is_vector : std::false_type {};
 
@@ -138,12 +124,12 @@ namespace matplot {
         using value_type = typename std::remove_reference<decltype(
             std::declval<iterator_type>().operator*())>::type;
         static constexpr bool is_map = is_pair<value_type>::value;
-        using key_type =
-            std::conditional_t<is_map, typename value_type::first_type,
-                               value_type>;
-        using mapped_type =
-            std::conditional_t<is_map, typename value_type::second_type,
-                               value_type>;
+        using key_type = typename
+            std::conditional<is_map, typename value_type::first_type,
+                               value_type>::type;
+        using mapped_type = typename
+            std::conditional<is_map, typename value_type::second_type,
+                               value_type>::type;
     };
 } // namespace matplot
 

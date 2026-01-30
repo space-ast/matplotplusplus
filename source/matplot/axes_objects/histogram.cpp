@@ -80,7 +80,7 @@ namespace matplot {
         return ss.str();
     }
 
-    std::string histogram::legend_string(std::string_view title) {
+    std::string histogram::legend_string(matplot::string_view title) {
         return " keyentry with boxes fillstyle solid border rgb '" +
                to_string(edge_color_) + "' fillcolor '" +
                to_string(face_color_) + "' title \"" + escape(title) + "\"";
@@ -412,7 +412,7 @@ namespace matplot {
         double xrange = maxx - minx;
         double binwidth = 1.0;
         if (!x.empty()) {
-            std::vector abs_x =
+            auto abs_x =
                 transform(x, [](double x) { return std::abs(x); });
             double xscale = *std::max_element(abs_x.begin(), abs_x.end());
             xrange = *std::max_element(x.begin(), x.end()) -
@@ -714,7 +714,7 @@ namespace matplot {
         return *this;
     }
 
-    class histogram &histogram::face_color(std::string_view color) {
+    class histogram &histogram::face_color(matplot::string_view color) {
         face_color(to_array(color));
         return *this;
     }
@@ -753,7 +753,7 @@ namespace matplot {
         return *this;
     }
 
-    class histogram &histogram::edge_color(std::string_view color) {
+    class histogram &histogram::edge_color(matplot::string_view color) {
         auto a = to_array(color);
         edge_color(a);
         return *this;

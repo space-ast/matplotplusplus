@@ -18,7 +18,7 @@ namespace matplot {
     network::network(class axes_type *parent,
                      const std::vector<std::pair<size_t, size_t>> &edges,
                      const vector_1d &weights, size_t n_vertices,
-                     std::string_view line_spec)
+                     matplot::string_view line_spec)
         : axes_object(parent), line_spec_(this, line_spec), edges_(edges),
           n_vertices_(n_vertices), weights_(weights) {
         line_spec_.marker_face(true);
@@ -85,7 +85,7 @@ namespace matplot {
         return res;
     }
 
-    std::string network::legend_string(std::string_view title) {
+    std::string network::legend_string(matplot::string_view title) {
         if (line_spec_.has_line() && line_spec_.has_non_custom_marker()) {
             return " keyentry " +
                    line_spec_.plot_string(
@@ -290,7 +290,9 @@ namespace matplot {
     void network::infer_n_vertices() {
         // look for highest edge index
         size_t n_vertices = edges_[0].first;
-        for (const auto &[edge_index_a, edge_index_b] : edges_) {
+        for (const auto &iter : edges_) {
+            auto edge_index_a = iter.first;
+            auto edge_index_b = iter.second;
             if (edge_index_a > n_vertices) {
                 n_vertices = edge_index_a;
             }
@@ -408,8 +410,11 @@ namespace matplot {
                 return axes_object::xmax();
             }
         }
-        auto [xmin_it, xmax_it] =
+
+        auto ret =
             std::minmax_element(x_data_.begin(), x_data_.end());
+        auto xmin_it = ret.first;
+        auto xmax_it = ret.second;
         return *xmax_it + 0.1 * (*xmax_it - *xmin_it);
     }
 
@@ -422,8 +427,10 @@ namespace matplot {
                 return axes_object::xmin();
             }
         }
-        auto [xmin_it, xmax_it] =
+        auto ret =
             std::minmax_element(x_data_.begin(), x_data_.end());
+        auto xmin_it = ret.first;
+        auto xmax_it = ret.second;
         return *xmin_it - 0.1 * (*xmax_it - *xmin_it);
     }
 
@@ -432,8 +439,10 @@ namespace matplot {
         if (y_data_.empty()) {
             return axes_object::ymax();
         }
-        auto [ymin_it, ymax_it] =
+        auto ret =
             std::minmax_element(y_data_.begin(), y_data_.end());
+        auto ymin_it = ret.first;
+        auto ymax_it = ret.second;
         return *ymax_it + 0.1 * (*ymax_it - *ymin_it);
     }
 
@@ -442,8 +451,10 @@ namespace matplot {
         if (y_data_.empty()) {
             return axes_object::ymin();
         }
-        auto [ymin_it, ymax_it] =
+        auto ret =
             std::minmax_element(y_data_.begin(), y_data_.end());
+        auto ymin_it = ret.first;
+        auto ymax_it = ret.second;
         return *ymin_it - 0.1 * (*ymax_it - *ymin_it);
     }
 
@@ -455,7 +466,7 @@ namespace matplot {
         }
     }
 
-    class network &network::line_style(std::string_view str) {
+    class network &network::line_style(matplot::string_view str) {
         line_spec_.parse_string(str);
         touch();
         return *this;
@@ -498,7 +509,8 @@ namespace matplot {
     class network &network::z_data(const std::vector<double> &z_data) {
         z_data_ = z_data;
         if (!z_data.empty() && parent_->children().size() == 1) {
-            auto [zmin, zmax] = minmax(z_data);
+            double zmin, zmax;
+            std::tie(zmin, zmax) = minmax(z_data);
             parent_->z_axis().limits({zmin, zmax});
         }
         touch();

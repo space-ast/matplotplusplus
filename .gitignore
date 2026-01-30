@@ -60,3 +60,7 @@ gh-md-toc
 *.out
 *.app
 
+.xmake
+
+#Ignore vscode AI rules
+.github\instructions\codacy.instructions.md

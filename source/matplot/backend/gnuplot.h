@@ -12,7 +12,7 @@
 #include <chrono>
 #include <tuple>
 
-namespace matplot::backend {
+namespace matplot{namespace backend {
     class MATPLOT_EXPORTS gnuplot : public backend_interface {
       public:
         gnuplot();
@@ -46,7 +46,7 @@ namespace matplot::backend {
 
         /// Identify the default terminal type in the system
         static std::string default_terminal_type();
-        static bool terminal_is_available(std::string_view);
+        static bool terminal_is_available(matplot::string_view);
         static std::tuple<int, int, int> gnuplot_version();
         static bool gnuplot_includes_legends();
         static bool gnuplot_has_wall_option();
@@ -85,37 +85,37 @@ namespace matplot::backend {
 
         static constexpr size_t pipe_capacity_worst_case = BUFSIZ;
         /// File formats for figures and properties of terminals
-        static constexpr std::array<
-            std::pair<std::string_view, std::string_view>, 33>
+        static  std::array<
+            std::pair<std::string, std::string>, 33>
         extension_terminal() {
-            return std::array<std::pair<std::string_view, std::string_view>,
+            return std::array<std::pair<std::string, std::string>,
                               33>{
-                std::pair{".html", "canvas"}, std::pair{".cgm", "cgm"},
-                std::pair{".txt", "dumb"}, std::pair{".md", "dumb"},
-                std::pair{".dxf", "dxf"}, std::pair{".emf", "emf"},
+                std::pair<std::string, std::string>{".html", "canvas"}, std::pair<std::string, std::string>{".cgm", "cgm"},
+                std::pair<std::string, std::string>{".txt", "dumb"}, std::pair<std::string, std::string>{".md", "dumb"},
+                std::pair<std::string, std::string>{".dxf", "dxf"}, std::pair<std::string, std::string>{".emf", "emf"},
                 // std::pair{".emtex", "emtex"},
-                std::pair{".eps", "postscript"}, std::pair{".eps", "epscairo"},
-                std::pair{".eps", "epslatex"}, std::pair{".gif", "gif"},
-                std::pair{".hpgl", "hpgl"}, std::pair{".jpeg", "jpeg"},
-                std::pair{".jpg", "jpeg"}, std::pair{".tex", "epslatex"},
-                std::pair{".mf", "mf"}, std::pair{".mp", "mp"},
-                std::pair{".pcl5", "pcl5"}, std::pair{".pdf", "pdf"},
-                std::pair{".pdf", "pdfcairo"}, std::pair{".png", "pngcairo"},
-                std::pair{".png", "png"}, std::pair{".tex", "pslatex"},
-                std::pair{".tex", "context"}, std::pair{".tex", "texdraw"},
-                std::pair{".tex", "tikz"},
+                std::pair<std::string, std::string>{".eps", "postscript"}, std::pair<std::string, std::string>{".eps", "epscairo"},
+                std::pair<std::string, std::string>{".eps", "epslatex"}, std::pair<std::string, std::string>{".gif", "gif"},
+                std::pair<std::string, std::string>{".hpgl", "hpgl"}, std::pair<std::string, std::string>{".jpeg", "jpeg"},
+                std::pair<std::string, std::string>{".jpg", "jpeg"}, std::pair<std::string, std::string>{".tex", "epslatex"},
+                std::pair<std::string, std::string>{".mf", "mf"}, std::pair<std::string, std::string>{".mp", "mp"},
+                std::pair<std::string, std::string>{".pcl5", "pcl5"}, std::pair<std::string, std::string>{".pdf", "pdf"},
+                std::pair<std::string, std::string>{".pdf", "pdfcairo"}, std::pair<std::string, std::string>{".png", "pngcairo"},
+                std::pair<std::string, std::string>{".png", "png"}, std::pair<std::string, std::string>{".tex", "pslatex"},
+                std::pair<std::string, std::string>{".tex", "context"}, std::pair<std::string, std::string>{".tex", "texdraw"},
+                std::pair<std::string, std::string>{".tex", "tikz"},
                 // std::pair{".tex", "eepic"},
                 // std::pair{".tex", "tpic"},
-                std::pair{".pstex", "pstex"},
-                std::pair{".pstricks", "pstricks"},
+                std::pair<std::string, std::string>{".pstex", "pstex"},
+                std::pair<std::string, std::string>{".pstricks", "pstricks"},
                 // std::pair{".qms", "qms"},
-                std::pair{".sixel", "sixelgd"}, std::pair{".svg", "svg"},
-                std::pair{".tek40xx", "tek40xx"},
-                std::pair{".tek410x", "tek410x"},
+                std::pair<std::string, std::string>{".sixel", "sixelgd"}, std::pair<std::string, std::string>{".svg", "svg"},
+                std::pair<std::string, std::string>{".tek40xx", "tek40xx"},
+                std::pair<std::string, std::string>{".tek410x", "tek410x"},
                 // std::pair{".tgif", "tgif"},
-                std::pair{".tkcanvas", "tkcanvas"},
+                std::pair<std::string, std::string>{".tkcanvas",   "tkcanvas"},
                 // std::pair{".tpic", "tpic"},
-                std::pair{".vttek", "vttek"}};
+                std::pair<std::string, std::string>{".vttek", "vttek"}};
         }
 
       private:
@@ -129,7 +129,7 @@ namespace matplot::backend {
         std::string terminal_{"qt"};
 
         // Position and size
-        std::array<unsigned, 4> position_{680, 558, 560, 420};
+        std::array<unsigned, 4> position_{{680, 558, 560, 420}};
 
         // Time we last flush, to avoid flushing results too fast
         std::chrono::high_resolution_clock::time_point last_flush_;
@@ -140,6 +140,6 @@ namespace matplot::backend {
         // Whether we should include comments in the commands
         bool include_comments_ = trace_commands;
     };
-} // namespace matplot::backend
+}} // namespace matplot::backend
 
 #endif // MATPLOTPLUSPLUS_BACKEND_GNUPLOT_H

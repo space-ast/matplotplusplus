@@ -17,7 +17,7 @@
 namespace matplot {
     contours::contours(class axes_type *parent, const vector_2d &X,
                        const vector_2d &Y, const vector_2d &Z,
-                       std::string_view line_spec)
+                       matplot::string_view line_spec)
         : axes_object(parent), line_spec_(this, line_spec), X_data_(X),
           Y_data_(Y), Z_data_(Z) {
         initialize_preprocessed_data();
@@ -27,7 +27,7 @@ namespace matplot {
     }
 
     contours::contours(class axes_type *parent, const vector_2d &Z,
-                       std::string_view line_spec)
+                       matplot::string_view line_spec)
         : axes_object(parent), line_spec_(this, line_spec), Z_data_(Z) {
         initialize_preprocessed_data();
         contour_generator_ =
@@ -44,8 +44,11 @@ namespace matplot {
         make_sure_data_is_preprocessed();
         // double zmax_ = zmax();
         // double zmin_ = zmin();
-        auto [min_it, max_it] =
+        auto ret =
             std::minmax_element(levels_.begin(), levels_.end());
+        auto min_it = ret.first;
+        auto max_it = ret.second;
+
         double contour_min_level = *min_it;
         double contour_max_level = *max_it;
 
@@ -53,7 +56,10 @@ namespace matplot {
         ss.precision(10);
         ss << std::fixed;
         if (filled_) {
-            auto [lower_levels, upper_levels] = get_lowers_and_uppers();
+            auto ret = get_lowers_and_uppers();
+            auto lower_levels = ret.first;
+            auto upper_levels = ret.second;
+
             // Command for background filled curve
             // The background polygon with the whole area has its level defined
             // by the largest polygon. Whatever level is outside this largest
@@ -353,10 +359,13 @@ namespace matplot {
         double zmin_ = Z[0][0];
         double zmax_ = Z[0][0];
         for (const auto &row : Z) {
-            auto [row_min_it, row_max_it] =
+            auto element =
                 std::minmax_element(row.begin(), row.end());
-            zmin_ = std::min(zmin_, *row_min_it);
-            zmax_ = std::max(zmax_, *row_max_it);
+            auto row_min_it = element.first;
+            auto row_max_it = element.second;
+
+            zmin_ = (std::min)(zmin_, *row_min_it);
+            zmax_ = (std::max)(zmax_, *row_max_it);
         }
         return determine_contour_levels(zmin_, zmax_, n_levels_, ext);
     }
@@ -471,9 +480,11 @@ namespace matplot {
         return std::make_pair(lowers, uppers);
     }
 
-    std::string contours::legend_string(std::string_view title) {
-        auto [min_level_it, max_level_it] =
+    std::string contours::legend_string(matplot::string_view title) {
+        auto ret =
             std::minmax_element(levels_.begin(), levels_.end());
+        auto min_level_it = ret.first;
+        auto max_level_it = ret.second;
         double zmax = *max_level_it;
         double zmin = *min_level_it;
 
@@ -544,7 +555,7 @@ namespace matplot {
         // look for the grid position of (x > x1, y > y1) - NE
         auto it_y =
             std::find_if(Y_data_.begin(), Y_data_.end(),
-                         [&](const auto &y_row) { return y_row[0] > avg_y; });
+                         [&](const vector_1d &y_row) { return y_row[0] > avg_y; });
         auto it_x = std::find_if(
             X_data_[0].begin(), X_data_[0].end(),
             [&](const double &x_row_value) { return x_row_value > avg_x; });
@@ -775,7 +786,10 @@ namespace matplot {
             return false;
         };
 
-        auto [lower_levels, upper_levels] = get_lowers_and_uppers();
+        
+        auto ret = get_lowers_and_uppers();
+        auto lower_levels = ret.first;
+        auto upper_levels = ret.second;
 
         std::stringstream ss;
         ss.precision(10);
@@ -864,9 +878,11 @@ namespace matplot {
                                 }
                                 ss << "    " << x << "  " << y << "  "
                                    << segment_z_level << "\n";
-                                auto [xs, ys] = fill_border_jump(
+                                auto ret = fill_border_jump(
                                     x, y, next_x, next_y, _xmin, _xmax, _ymin,
                                     _ymax, true);
+                                auto xs = ret.first;
+                                auto ys = ret.second;
                                 for (size_t k = 0; k < xs.size(); ++k) {
                                     ss << "    " << xs[k] << "  " << ys[k]
                                        << "  " << segment_z_level << "\n";
@@ -901,9 +917,11 @@ namespace matplot {
                             double next_y =
                                 filled_lines_[child_line_index].second[k + 1];
                             if (is_border_jump(x, y, next_x, next_y)) {
-                                auto [xs, ys] = fill_border_jump(
+                                auto ret = fill_border_jump(
                                     x, y, next_x, next_y, _xmin, _xmax, _ymin,
                                     _ymax, true);
+                                auto xs = ret.first;
+                                auto ys = ret.second;
                                 for (size_t l = 0; l < xs.size(); ++l) {
                                     ss << "    " << xs[l] << "  " << ys[l]
                                        << "  " << segment_z_level << "\n";
@@ -1237,7 +1255,7 @@ namespace matplot {
         return axes_object::axes_category::two_dimensional;
     }
 
-    class contours &contours::line_style(std::string_view str) {
+    class contours &contours::line_style(matplot::string_view str) {
         line_spec_.parse_string(str);
         touch();
         return *this;
@@ -1321,8 +1339,8 @@ namespace matplot {
     }
 
     float contours::font_size() const {
-        if (font_size_) {
-            return *font_size_;
+        if (font_size_ > 0) {
+            return font_size_;
         } else {
             return parent_->font_size();
         }
@@ -1335,14 +1353,14 @@ namespace matplot {
     }
 
     const std::string contours::font() const {
-        if (font_) {
-            return *font_;
+        if (font_.size() > 0) {
+            return font_;
         } else {
             return parent_->font();
         }
     }
 
-    class contours &contours::font(std::string_view font) {
+    class contours &contours::font(matplot::string_view font) {
         font_ = font;
         touch();
         return *this;
@@ -1350,7 +1368,7 @@ namespace matplot {
 
     const std::string &contours::font_weight() const { return font_weight_; }
 
-    class contours &contours::font_weight(std::string_view font_weight) {
+    class contours &contours::font_weight(matplot::string_view font_weight) {
         font_weight_ = font_weight;
         touch();
         return *this;
@@ -1364,7 +1382,7 @@ namespace matplot {
         return *this;
     }
 
-    class contours &contours::font_color(std::string_view fc) {
+    class contours &contours::font_color(matplot::string_view fc) {
         font_color(to_array(fc));
         return *this;
     }
@@ -1398,6 +1416,21 @@ namespace matplot {
         touch();
         return *this;
     }
+
+        // Check if two quadrants are neighbors
+        template<class T1, class T2>
+        bool are_neighbors(const T1 &a, const T2 &b) {
+            size_t distance_x = (std::max)(static_cast<size_t>(a.second),
+                                         static_cast<size_t>(b.second)) -
+                                (std::min)(static_cast<size_t>(a.second),
+                                         static_cast<size_t>(b.second));
+            size_t distance_y = (std::max)(static_cast<size_t>(a.first),
+                                         static_cast<size_t>(b.first)) -
+                                (std::min)(static_cast<size_t>(a.first),
+                                         static_cast<size_t>(b.first));
+            return distance_x <= 1 && distance_y <= 1;
+        };
+        
 
     void square_trace(
         size_t start_i, size_t start_j, const vector_2d &Z, double level,
@@ -1447,18 +1480,7 @@ namespace matplot {
             return std::make_pair(direction.second, -direction.first);
         };
 
-        // Check if two quadrants are neighbors
-        auto are_neighbors = [](const auto &a, const auto &b) {
-            size_t distance_x = std::max(static_cast<size_t>(a.second),
-                                         static_cast<size_t>(b.second)) -
-                                std::min(static_cast<size_t>(a.second),
-                                         static_cast<size_t>(b.second));
-            size_t distance_y = std::max(static_cast<size_t>(a.first),
-                                         static_cast<size_t>(b.first)) -
-                                std::min(static_cast<size_t>(a.first),
-                                         static_cast<size_t>(b.first));
-            return distance_x <= 1 && distance_y <= 1;
-        };
+        
 
         // Nan pair
         constexpr auto nan_pair =
@@ -1571,8 +1593,10 @@ namespace matplot {
         zmin_ = Z_data_[0][0];
         zmax_ = Z_data_[0][0];
         for (size_t i = 0; i < Z_data_.size(); ++i) {
-            auto [row_min, row_max] =
+            auto ret =
                 std::minmax_element(Z_data_[i].begin(), Z_data_[i].end());
+            auto row_min = ret.first;
+            auto row_max = ret.second;
             if (*row_min < zmin_) {
                 zmin_ = *row_min;
             }
@@ -1613,13 +1637,17 @@ namespace matplot {
         lines_.clear();
         codes_.clear();
         if (filled_) {
-            auto [lowers, uppers] = get_lowers_and_uppers();
+            auto ret = get_lowers_and_uppers();
+            auto lowers = ret.first;
+            auto uppers = ret.second;
             for (size_t i = 0; i < lowers.size(); ++i) {
                 double level = lowers[i];
                 double level_upper = uppers[i];
-                auto [vertices, kinds] =
+                auto ret =
                     contour_generator_.create_filled_contour(level,
                                                              level_upper);
+                auto vertices = ret.first;
+                auto kinds = ret.second;
                 filled_lines_.emplace_back(vertices);
                 codes_.emplace_back(kinds);
             }

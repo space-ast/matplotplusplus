@@ -144,6 +144,8 @@ namespace matplot {
             /// https://github.com/matplotlib/matplotlib/blob/master/src/_backend_agg.h
             /// \see https://github.com/ocornut/imgui/tree/master/examples
           public:
+            virtual void draw(matplot::figure_type*);
+
             /// \brief Draws background on the image
             virtual void draw_background(const std::array<float, 4> &color);
 

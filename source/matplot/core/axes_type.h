@@ -20,7 +20,7 @@
 #include <matplot/axes_objects/histogram.h>
 #include <matplot/axes_objects/line.h>
 
-#include <optional>
+// #include <optional>
 
 
 
@@ -28,11 +28,9 @@ namespace matplot {
     class MATPLOT_EXPORTS axes_type : public std::enable_shared_from_this<class axes_type> {
       public:
         // {left bottom right top}
-        static constexpr std::array<float, 4> default_subplot_inset{.2f, .18f,
-                                                                    .04f, .1f};
+        static std::array<float, 4> default_subplot_inset;
         // {x, y, width, height}
-        static constexpr std::array<float, 4> default_axes_position{
-            .13f, .11f, .775f, .815f};
+        static std::array<float, 4> default_axes_position;
 
       public:
         axes_type();
@@ -59,8 +57,7 @@ namespace matplot {
 
         /// Put object derived from axes_object_handle in the axes
         template <class T> void emplace_object(std::shared_ptr<T> obj) {
-            std::enable_if_t<std::is_base_of_v<axes_object, T>,
-                             axes_object_handle>
+            typename std::enable_if<std::is_base_of<axes_object, T>::value, axes_object_handle>::type
                 ah = std::dynamic_pointer_cast<axes_object>(obj);
             emplace_object(ah);
         }
@@ -164,11 +161,11 @@ namespace matplot {
 
         const std::string &xlabel() const;
 
-        void xlabel(std::string_view str);
+        void xlabel(matplot::string_view str);
 
         const std::string &xtickformat() const;
 
-        void xtickformat(std::string_view str);
+        void xtickformat(matplot::string_view str);
 
         const std::vector<double> &xticks() const;
 
@@ -196,11 +193,11 @@ namespace matplot {
 
         const std::string &x2label() const;
 
-        void x2label(std::string_view str);
+        void x2label(matplot::string_view str);
 
         const std::string &x2tickformat() const;
 
-        void x2tickformat(std::string_view str);
+        void x2tickformat(matplot::string_view str);
 
         const std::vector<double> &x2ticks() const;
 
@@ -228,11 +225,11 @@ namespace matplot {
 
         const std::string &ylabel() const;
 
-        void ylabel(std::string_view str);
+        void ylabel(matplot::string_view str);
 
         const std::string &ytickformat() const;
 
-        void ytickformat(std::string_view str);
+        void ytickformat(matplot::string_view str);
 
         const std::vector<double> &yticks() const;
 
@@ -260,11 +257,11 @@ namespace matplot {
 
         const std::string &y2label() const;
 
-        void y2label(std::string_view str);
+        void y2label(matplot::string_view str);
 
         const std::string &y2tickformat() const;
 
-        void y2tickformat(std::string_view str);
+        void y2tickformat(matplot::string_view str);
 
         const std::vector<double> &y2ticks() const;
 
@@ -292,11 +289,11 @@ namespace matplot {
 
         const std::string &zlabel() const;
 
-        void zlabel(std::string_view str);
+        void zlabel(matplot::string_view str);
 
         const std::string &ztickformat() const;
 
-        void ztickformat(std::string_view str);
+        void ztickformat(matplot::string_view str);
 
         const std::vector<double> &zticks() const;
 
@@ -324,11 +321,11 @@ namespace matplot {
 
         const std::string &cblabel() const;
 
-        void cblabel(std::string_view str);
+        void cblabel(matplot::string_view str);
 
         const std::string &cbtickformat() const;
 
-        void cbtickformat(std::string_view str);
+        void cbtickformat(matplot::string_view str);
 
         const std::vector<double> &cbticks() const;
 
@@ -368,11 +365,11 @@ namespace matplot {
 
         const std::string &rlabel() const;
 
-        void rlabel(std::string_view str);
+        void rlabel(matplot::string_view str);
 
         const std::string &rtickformat() const;
 
-        void rtickformat(std::string_view str);
+        void rtickformat(matplot::string_view str);
 
         const std::vector<double> &rticks() const;
 
@@ -422,7 +419,7 @@ namespace matplot {
 
         const std::string &title() const;
 
-        void title(std::string_view title);
+        void title(matplot::string_view title);
 
         bool title_enhanced() const;
 
@@ -438,7 +435,7 @@ namespace matplot {
 
         const std::string &font() const;
 
-        void font(std::string_view font);
+        void font(matplot::string_view font);
 
         float font_size() const;
 
@@ -446,7 +443,7 @@ namespace matplot {
 
         const std::string &font_weight() const;
 
-        void font_weight(std::string_view font_weight);
+        void font_weight(matplot::string_view font_weight);
 
         bool clipping() const;
 
@@ -462,7 +459,7 @@ namespace matplot {
 
         const std::string &title_font_weight() const;
 
-        void title_font_weight(std::string_view title_font_weight);
+        void title_font_weight(matplot::string_view title_font_weight);
 
         const color_array &title_color() const;
 
@@ -474,7 +471,7 @@ namespace matplot {
 
         void color(const std::array<float, 3> &color);
 
-        void color(std::string_view c);
+        void color(matplot::string_view c);
 
         void color(const enum color &c);
 
@@ -572,7 +569,7 @@ namespace matplot {
 
         const std::string &line_style_order() const;
 
-        void line_style_order(std::string_view line_style_order);
+        void line_style_order(matplot::string_view line_style_order);
 
         size_t line_style_order_index() const;
 
@@ -650,11 +647,11 @@ namespace matplot {
         /// Create simple line plot
         line_handle plot(const std::vector<double> &x,
                          const std::vector<double> &y,
-                         std::string_view line_spec = "");
+                         matplot::string_view line_spec = "");
 
         /// Create line plot with automatic x = 1,2,...,n
         line_handle plot(const std::vector<double> &y,
-                         std::string_view line_spec = "");
+                         matplot::string_view line_spec = "");
 
         /// \brief Create many line plots at once with parameter pack
         /// First two parameters are always 1) x and y or 2) y and line spec
@@ -667,8 +664,8 @@ namespace matplot {
         /// This function represents the case 1a, where 3rd parameter line spec
         /// is a divider between plots
         template <class... Args>
-        auto plot(const std::vector<double> &x, const std::vector<double> &y,
-                  std::string_view line_spec, Args &&...args) {
+        std::vector<line_handle> plot(const std::vector<double> &x, const std::vector<double> &y,
+                  matplot::string_view line_spec, Args &&...args) {
             std::vector<line_handle> result;
             std::vector<line_handle> result_a =
                 vectorize(this->plot(x, y, line_spec));
@@ -693,7 +690,7 @@ namespace matplot {
         /// This function represents the case 1b, where 3rd parameter x2 is a
         /// divider between plots
         template <class... Args>
-        auto plot(const std::vector<double> &x, const std::vector<double> &y,
+        std::vector<line_handle> plot(const std::vector<double> &x, const std::vector<double> &y,
                   const std::vector<double> &x2, Args &&...args) {
             std::vector<line_handle> result;
             std::vector<line_handle> result_a = vectorize(this->plot(x, y));
@@ -718,7 +715,7 @@ namespace matplot {
         /// This function represents the case 2, where 2nd parameter line spec
         /// is a divider between plots
         template <class... Args>
-        auto plot(const std::vector<double> &y, std::string_view line_spec,
+        std::vector<line_handle> plot(const std::vector<double> &y, std::string line_spec,
                   Args &&...args) {
             std::vector<line_handle> result;
             std::vector<line_handle> result_a =
@@ -736,11 +733,11 @@ namespace matplot {
         /// Plot lists of lists
         std::vector<line_handle> plot(const std::vector<double> &x,
                                       const std::vector<std::vector<double>> &Y,
-                                      std::string_view line_spec = "");
+                                      matplot::string_view line_spec = "");
 
         /// Plot lists of lists with automatic x
         std::vector<line_handle> plot(const std::vector<std::vector<double>> &Y,
-                                      std::string_view line_spec = "");
+                                      matplot::string_view line_spec = "");
 
         /// Plot lines representing a colormap
         std::vector<line_handle>
@@ -750,20 +747,20 @@ namespace matplot {
         line_handle plot3(const std::vector<double> &x,
                           const std::vector<double> &y,
                           const std::vector<double> &z,
-                          std::string_view line_spec = "");
+                          matplot::string_view line_spec = "");
 
         /// Plot 3d line plot - lists of Xs and Ys
         std::vector<line_handle>
         plot3(const std::vector<std::vector<double>> &X,
               const std::vector<std::vector<double>> &Y,
-              const std::vector<double> &z, std::string_view line_spec = "");
+              const std::vector<double> &z, matplot::string_view line_spec = "");
 
         /// 3d-plot lists of Xs, Ys, and Zs
         std::vector<line_handle>
         plot3(const std::vector<std::vector<double>> &X,
               const std::vector<std::vector<double>> &Y,
               const std::vector<std::vector<double>> &Z,
-              std::string_view line_spec = "");
+              matplot::string_view line_spec = "");
 
         /// \brief Create many 3d line plots at once with parameter pack
         /// The logic is the analogous to the plot function:
@@ -772,8 +769,8 @@ namespace matplot {
         ///     Case 2:  z, line_spec, next_x, ...
         /// This function represents case 1a
         template <class... Args>
-        auto plot3(const std::vector<double> &x, const std::vector<double> &y,
-                   const std::vector<double> &z, std::string_view line_spec,
+        std::vector<line_handle> plot3(const std::vector<double> &x, const std::vector<double> &y,
+                   const std::vector<double> &z, matplot::string_view line_spec,
                    Args &&...args) {
             std::vector<line_handle> result;
             std::vector<line_handle> result_a =
@@ -795,7 +792,7 @@ namespace matplot {
         ///     Case 2:  z, line_spec, next_x, ...
         /// This function represents case 1b
         template <class... Args>
-        auto plot3(const std::vector<double> &x, const std::vector<double> &y,
+        std::vector<line_handle> plot3(const std::vector<double> &x, const std::vector<double> &y,
                    const std::vector<double> &z, const std::vector<double> &x2,
                    Args &&...args) {
             std::vector<line_handle> result;
@@ -813,28 +810,28 @@ namespace matplot {
         /// Create stairs line plot
         stair_handle stairs(const std::vector<double> &x,
                             const std::vector<double> &y,
-                            std::string_view line_spec = "");
+                            matplot::string_view line_spec = "");
 
         /// Basic stairs function with automatic x
         stair_handle stairs(const std::vector<double> &y,
-                            std::string_view line_spec = "");
+                            matplot::string_view line_spec = "");
 
         /// Stairs with lists of lists (same x for all Y)
         std::vector<stair_handle>
         stairs(const std::vector<double> &x,
                const std::vector<std::vector<double>> &Y,
-               std::string_view line_spec = "");
+               matplot::string_view line_spec = "");
 
         /// Stairs with lists of lists (one X per Y)
         std::vector<stair_handle>
         stairs(const std::vector<std::vector<double>> &X,
                const std::vector<std::vector<double>> &Y,
-               std::string_view line_spec = "");
+               matplot::string_view line_spec = "");
 
         /// Stairs with lists of lists with automatic x
         std::vector<stair_handle>
         stairs(const std::vector<std::vector<double>> &Y,
-               std::string_view line_spec = "");
+               matplot::string_view line_spec = "");
 
         /// \brief Create many stairs at once with parameter pack
         /// The logic is analogous to the plot function:
@@ -843,8 +840,8 @@ namespace matplot {
         ///     Case 2 : y, line_spec, next_x
         /// This function represents case 1a
         template <class... Args>
-        auto stairs(const std::vector<double> &x, const std::vector<double> &y,
-                    std::string_view line_spec, Args &&...args) {
+        std::vector<stair_handle> stairs(const std::vector<double> &x, const std::vector<double> &y,
+                    matplot::string_view line_spec, Args &&...args) {
             std::vector<stair_handle> result;
             std::vector<stair_handle> result_a =
                 vectorize(this->stairs(x, y, line_spec));
@@ -865,7 +862,7 @@ namespace matplot {
         ///     Case 2 : y, line_spec, next_x
         /// This function represents case 1b
         template <class... Args>
-        auto stairs(const std::vector<double> &x, const std::vector<double> &y,
+         std::vector<stair_handle> stairs(const std::vector<double> &x, const std::vector<double> &y,
                     const std::vector<double> &x2, Args &&...args) {
             std::vector<stair_handle> result;
             std::vector<stair_handle> result_a = vectorize(this->stairs(x, y));
@@ -886,7 +883,7 @@ namespace matplot {
         ///     Case 2 : y, line_spec, next_x
         /// This function represents case 2
         template <class... Args>
-        auto stairs(const std::vector<double> &y, std::string_view line_spec,
+        std::vector<stair_handle> stairs(const std::vector<double> &y, matplot::string_view line_spec,
                     Args &&...args) {
             std::vector<stair_handle> result;
             std::vector<stair_handle> result_a =
@@ -906,7 +903,7 @@ namespace matplot {
         errorbar(const std::vector<double> &x, const std::vector<double> &y,
                  const std::vector<double> &error,
                  error_bar::type type = error_bar::type::vertical,
-                 std::string_view line_spec = "");
+                 matplot::string_view line_spec = "");
 
         /// Core errorbar function with different values on both directions
         error_bar_handle errorbar(const std::vector<double> &x,
@@ -915,45 +912,45 @@ namespace matplot {
                                   const std::vector<double> &y_pos_delta,
                                   const std::vector<double> &x_neg_delta,
                                   const std::vector<double> &x_pos_delta,
-                                  std::string_view line_spec = "");
+                                  matplot::string_view line_spec = "");
 
         /// If there is a string instead of a type the first version, we default
         /// to vertical
         error_bar_handle errorbar(const std::vector<double> &x,
                                   const std::vector<double> &y,
                                   const std::vector<double> &y_error,
-                                  std::string_view line_spec);
+                                  matplot::string_view line_spec);
 
         /// Core area function (x is a vector, y is a matrix)
         std::vector<filled_area_handle>
         area(const std::vector<double> &x,
              const std::vector<std::vector<double>> &Y, double base_value = 0.,
-             bool stacked = true, std::string_view line_spec = "k-");
+             bool stacked = true, matplot::string_view line_spec = "k-");
 
         /// Area: x is a vector, y is a vector
         filled_area_handle area(const std::vector<double> &x,
                                 const std::vector<double> &y,
                                 double base_value = 0., bool stacked = true,
-                                std::string_view line_spec = "k-");
+                                matplot::string_view line_spec = "k-");
 
         /// Area: Automatic x, y is a matrix
         std::vector<filled_area_handle>
         area(const std::vector<std::vector<double>> &Y, double base_value = 0.,
-             bool stacked = true, std::string_view line_spec = "k-");
+             bool stacked = true, matplot::string_view line_spec = "k-");
 
         /// Area: Skip the base value
         std::vector<filled_area_handle>
         area(const std::vector<std::vector<double>> &Y, bool stacked,
-             std::string_view line_spec = "k-");
+             matplot::string_view line_spec = "k-");
 
         /// Area: Automatic x, y is a vector
         filled_area_handle area(const std::vector<double> &y,
                                 double base_value = 0., bool stacked = true,
-                                std::string_view line_spec = "k-");
+                                matplot::string_view line_spec = "k-");
 
         /// String function line plot
-        string_function_handle fplot(std::string_view equation,
-                                     std::string_view line_spec = "");
+        string_function_handle fplot(matplot::string_view equation,
+                                     matplot::string_view line_spec = "");
 
         /// String function line plots
         std::vector<string_function_handle>
@@ -964,18 +961,18 @@ namespace matplot {
         function_line_handle fplot(function_line::function_type equation,
                                    const std::array<double, 2> &x_range = {-5,
                                                                            5},
-                                   std::string_view line_spec = "");
+                                   matplot::string_view line_spec = "");
 
         /// Lambda function line plot - automatic limits
         function_line_handle fplot(function_line::function_type equation,
-                                   std::string_view line_spec);
+                                   matplot::string_view line_spec);
 
         /// Lambda function line plot - two functions (x/y)
         function_line_handle fplot(function_line::function_type function_x,
                                    function_line::function_type function_y,
                                    const std::array<double, 2> &t_range = {-5,
                                                                            5},
-                                   std::string_view line_spec = "");
+                                   matplot::string_view line_spec = "");
 
         /// Lambda function line plot - list of functions
         std::vector<function_line_handle>
@@ -995,11 +992,11 @@ namespace matplot {
         line_handle
         fimplicit(implicit_function_type equation,
                   const std::array<double, 4> &xy_interval = {-5, 5, -5, 5},
-                  std::string_view line_spec = "");
+                  matplot::string_view line_spec = "");
 
         /// Implicit lambda function line plot - automatic xy_interval
         line_handle fimplicit(implicit_function_type equation,
-                              std::string_view line_spec);
+                              matplot::string_view line_spec);
 
         /// Lambda function plot 3D
         function_line_handle fplot3(function_line::function_type function_x,
@@ -1007,7 +1004,7 @@ namespace matplot {
                                     function_line::function_type function_z,
                                     const std::array<double, 2> &t_range = {-5,
                                                                             5},
-                                    std::string_view line_spec = "");
+                                    matplot::string_view line_spec = "");
 
         /// Histogram - Choose binning algorithm and normalization algorithm
         histogram_handle hist(const std::vector<double> &data,
@@ -1120,12 +1117,12 @@ namespace matplot {
         parallel_lines_handle
         parallelplot(const std::vector<std::vector<double>> &X,
                      const std::vector<double> &colors,
-                     std::string_view line_spec = "");
+                     matplot::string_view line_spec = "");
 
         /// Parallel plot - default line colors
         parallel_lines_handle
         parallelplot(const std::vector<std::vector<double>> &X,
-                     std::string_view line_spec = "");
+                     matplot::string_view line_spec = "");
 
         /// Core pie function with explode values and labels
         circles_handle pie(const std::vector<double> &x,
@@ -1153,13 +1150,13 @@ namespace matplot {
                              const std::vector<double> &z,
                              const std::vector<double> &sizes = {},
                              const std::vector<double> &colors = {},
-                             std::string_view line_spec = "o");
+                             matplot::string_view line_spec = "o");
 
         /// Scatter3 - Default sizes and colors
         line_handle scatter3(const std::vector<double> &x,
                              const std::vector<double> &y,
                              const std::vector<double> &z,
-                             std::string_view line_spec);
+                             matplot::string_view line_spec);
 
         /// Core wordcloud function - Wordcloud from words
         labels_handle wordcloud(const std::vector<std::string> &words,
@@ -1173,9 +1170,9 @@ namespace matplot {
 
         /// Wordcloud from text
         labels_handle
-        wordcloud(std::string_view text,
+        wordcloud(matplot::string_view text,
                   const std::vector<std::string> &black_list,
-                  std::string_view delimiters = " ',\n\r\t\".!?:;",
+                  matplot::string_view delimiters = " ',\n\r\t\".!?:;",
                   size_t max_cloud_size = 100,
                   const std::vector<double> &custom_colors = {});
 
@@ -1188,40 +1185,40 @@ namespace matplot {
         /// Core plot function
         line_handle stem(const std::vector<double> &x,
                          const std::vector<double> &y,
-                         std::string_view line_spec = "-o");
+                         matplot::string_view line_spec = "-o");
 
         /// Basic plot function with automatic x
         line_handle stem(const std::vector<double> &y,
-                         std::string_view line_spec = "-o");
+                         matplot::string_view line_spec = "-o");
 
         /// Stem - Plot lists of lists
         std::vector<line_handle> stem(const std::vector<double> &x,
                                       const std::vector<std::vector<double>> &Y,
-                                      std::string_view line_spec = "-o");
+                                      matplot::string_view line_spec = "-o");
 
         /// Plot lists of lists with automatic x
         std::vector<line_handle> stem(const std::vector<std::vector<double>> &Y,
-                                      std::string_view line_spec = "-o");
+                                      matplot::string_view line_spec = "-o");
 
         /// Stem 3d - Core function
         line_handle stem3(const std::vector<double> &x,
                           const std::vector<double> &y,
                           const std::vector<double> &z,
-                          std::string_view line_spec = "-o");
+                          matplot::string_view line_spec = "-o");
 
         /// 3d-stem lists of Xs and Ys
         std::vector<line_handle>
         stem3(const std::vector<std::vector<double>> &X,
               const std::vector<std::vector<double>> &Y,
-              const std::vector<double> &z, std::string_view line_spec = "-o");
+              const std::vector<double> &z, matplot::string_view line_spec = "-o");
 
         /// Stem 3d - Automatic x and y
         line_handle stem3(const std::vector<double> &z,
-                          std::string_view line_spec = "-o");
+                          matplot::string_view line_spec = "-o");
 
         /// Stem 3d - Automatic x and y - Many Zs
         line_handle stem3(const std::vector<std::vector<double>> &Z,
-                          std::string_view line_spec = "-o");
+                          matplot::string_view line_spec = "-o");
 
         /// Core geoplot function
         circles_handle geobubble(const std::vector<double> &latitude,
@@ -1240,7 +1237,7 @@ namespace matplot {
         /// Core geoplot function - Plot lines on world map
         line_handle geoplot(const std::vector<double> &latitude,
                             const std::vector<double> &longitude,
-                            std::string_view line_spec = "");
+                            matplot::string_view line_spec = "");
 
         /// Adjust limits and reload that region of the world map in the proper
         /// resolution
@@ -1266,11 +1263,11 @@ namespace matplot {
         /// Compass plot function
         vectors_handle compass(const std::vector<double> &x,
                                const std::vector<double> &y,
-                               std::string_view line_spec = "");
+                               matplot::string_view line_spec = "");
 
         /// Ezpolar - Plot function on polar plot
-        string_function_handle ezpolar(std::string_view equation,
-                                       std::string_view line_spec = "");
+        string_function_handle ezpolar(matplot::string_view equation,
+                                       matplot::string_view line_spec = "");
 
         std::vector<string_function_handle>
         ezpolar(std::vector<std::string> equations,
@@ -1278,24 +1275,24 @@ namespace matplot {
 
         function_line_handle ezpolar(function_line::function_type equation,
                                      const std::array<double, 2> &t_range,
-                                     std::string_view line_spec = "");
+                                     matplot::string_view line_spec = "");
 
         function_line_handle ezpolar(function_line::function_type equation,
-                                     std::string_view line_spec = "");
+                                     matplot::string_view line_spec = "");
 
         function_line_handle ezpolar(function_line::function_type equation,
                                      std::vector<double> x_range,
-                                     std::string_view line_spec = "");
+                                     matplot::string_view line_spec = "");
 
         function_line_handle ezpolar(function_line::function_type function_x,
                                      function_line::function_type function_y,
                                      const std::array<double, 2> &t_range,
-                                     std::string_view line_spec = "");
+                                     matplot::string_view line_spec = "");
 
         function_line_handle ezpolar(function_line::function_type function_x,
                                      function_line::function_type function_y,
                                      std::vector<double> t_range,
-                                     std::string_view line_spec = "");
+                                     matplot::string_view line_spec = "");
 
         std::vector<function_line_handle>
         ezpolar(std::vector<function_line::function_type> equations,
@@ -1314,15 +1311,15 @@ namespace matplot {
         /// Polar plot - Core function
         line_handle polarplot(const std::vector<double> &theta,
                               const std::vector<double> &rho,
-                              std::string_view line_spec = "");
+                              matplot::string_view line_spec = "");
 
         /// Polar plot - Automatic theta
         line_handle polarplot(const std::vector<double> &rho,
-                              std::string_view line_spec = "");
+                              matplot::string_view line_spec = "");
 
         /// Polar plot - Complex numbers
         line_handle polarplot(const std::vector<std::complex<double>> &z,
-                              std::string_view line_spec = "*");
+                              matplot::string_view line_spec = "*");
 
         /// Polar scatter - Core function
         line_handle
@@ -1330,24 +1327,24 @@ namespace matplot {
                      const std::vector<double> &rho,
                      const std::vector<double> &sizes = std::vector<double>{},
                      const std::vector<double> &colors = std::vector<double>{},
-                     std::string_view line_spec = "o");
+                     matplot::string_view line_spec = "o");
 
         /// Polar scatter - Single size - Default colors
         line_handle polarscatter(const std::vector<double> &theta,
                                  const std::vector<double> &rho, double size,
-                                 std::string_view line_spec = "o");
+                                 matplot::string_view line_spec = "o");
 
         /// Polar scatter - Default size and colors
         line_handle polarscatter(const std::vector<double> &theta,
                                  const std::vector<double> &rho,
-                                 std::string_view line_spec);
+                                 matplot::string_view line_spec);
 
         /// Contour - Core function - Manual levels
         contours_handle contour(const std::vector<std::vector<double>> &X,
                                 const std::vector<std::vector<double>> &Y,
                                 const std::vector<std::vector<double>> &Z,
                                 std::vector<double> levels,
-                                std::string_view line_spec = "",
+                                matplot::string_view line_spec = "",
                                 size_t n_levels = 0);
 
         /// Contour - Manual number of levels (or 0 for automatic number of
@@ -1356,20 +1353,20 @@ namespace matplot {
                                 const std::vector<std::vector<double>> &Y,
                                 const std::vector<std::vector<double>> &Z,
                                 size_t n_levels = 0,
-                                std::string_view line_spec = "");
+                                matplot::string_view line_spec = "");
 
         /// Contour - Automatic levels and number of levels
         contours_handle contour(const std::vector<std::vector<double>> &X,
                                 const std::vector<std::vector<double>> &Y,
                                 const std::vector<std::vector<double>> &Z,
-                                std::string_view line_spec);
+                                matplot::string_view line_spec);
 
         /// Contour filled - Manual levels
         contours_handle contourf(const std::vector<std::vector<double>> &X,
                                  const std::vector<std::vector<double>> &Y,
                                  const std::vector<std::vector<double>> &Z,
                                  std::vector<double> levels,
-                                 std::string_view line_spec = "",
+                                 matplot::string_view line_spec = "",
                                  size_t n_levels = 0);
 
         /// Contour filled - Manual number of levels
@@ -1377,13 +1374,13 @@ namespace matplot {
                                  const std::vector<std::vector<double>> &Y,
                                  const std::vector<std::vector<double>> &Z,
                                  size_t n_levels = 0,
-                                 std::string_view line_spec = "");
+                                 matplot::string_view line_spec = "");
 
         /// Contour filled - Automatic number of levels
         contours_handle contourf(const std::vector<std::vector<double>> &X,
                                  const std::vector<std::vector<double>> &Y,
                                  const std::vector<std::vector<double>> &Z,
-                                 std::string_view line_spec);
+                                 matplot::string_view line_spec);
 
         using fcontour_function_type = std::function<double(double, double)>;
 
@@ -1392,21 +1389,21 @@ namespace matplot {
         contours_handle fcontour(fcontour_function_type fn,
                                  const std::array<double, 4> &xy_range,
                                  std::vector<double> levels = {},
-                                 std::string_view line_spec = "",
+                                 matplot::string_view line_spec = "",
                                  size_t n_levels = 0);
 
         /// Lambda function contour - Manual number of levels (default = 9)
         contours_handle fcontour(fcontour_function_type fn, size_t n_levels = 9,
-                                 std::string_view line_spec = "");
+                                 matplot::string_view line_spec = "");
 
         /// Lambda function contour - Automatic number of levels and levels
         contours_handle fcontour(fcontour_function_type fn,
-                                 std::string_view line_spec);
+                                 matplot::string_view line_spec);
 
         /// Feather - Core function
         vectors_handle feather(const std::vector<double> &u,
                                const std::vector<double> &v,
-                               std::string_view line_spec = "");
+                               matplot::string_view line_spec = "");
 
         /// Quiver - Core function
         vectors_handle quiver(const std::vector<double> &x,
@@ -1414,7 +1411,7 @@ namespace matplot {
                               const std::vector<double> &u,
                               const std::vector<double> &v,
                               const std::vector<double> &c, double scale = 1.0,
-                              std::string_view line_spec = "");
+                              matplot::string_view line_spec = "");
 
         /// Quiver - 2d x,y,u,v
         vectors_handle quiver(const std::vector<std::vector<double>> &x,
@@ -1423,7 +1420,7 @@ namespace matplot {
                               const std::vector<std::vector<double>> &v,
                               const std::vector<std::vector<double>> &c,
                               double scale = 1.0,
-                              std::string_view line_spec = "");
+                              matplot::string_view line_spec = "");
 
         /// Quiver - 2d x,y,u,v with no color mapping
         vectors_handle quiver(const std::vector<std::vector<double>> &x,
@@ -1431,14 +1428,14 @@ namespace matplot {
                               const std::vector<std::vector<double>> &u,
                               const std::vector<std::vector<double>> &v,
                               double scale = 1.0,
-                              std::string_view line_spec = "");
+                              matplot::string_view line_spec = "");
 
         /// Quiver - x,y,u,v with no color mapping
         vectors_handle quiver(const std::vector<double> &x,
                               const std::vector<double> &y,
                               const std::vector<double> &u,
                               const std::vector<double> &v, double scale = 1.0,
-                              std::string_view line_spec = "");
+                              matplot::string_view line_spec = "");
 
         /// Quiver 3d - Core function
         vectors_handle
@@ -1446,7 +1443,7 @@ namespace matplot {
                 const std::vector<double> &z, const std::vector<double> &u,
                 const std::vector<double> &v, const std::vector<double> &w,
                 const std::vector<double> &c, double scale = 1.0,
-                std::string_view line_spec = "");
+                matplot::string_view line_spec = "");
 
         /// Quiver 3d - 2d vectors
         vectors_handle quiver3(const std::vector<std::vector<double>> &x,
@@ -1457,7 +1454,7 @@ namespace matplot {
                                const std::vector<std::vector<double>> &w,
                                const std::vector<std::vector<double>> &c,
                                double scale = 1.0,
-                               std::string_view line_spec = "");
+                               matplot::string_view line_spec = "");
 
         /// Quiver 3d - 2d vectors no color mapping
         vectors_handle quiver3(const std::vector<std::vector<double>> &x,
@@ -1467,7 +1464,7 @@ namespace matplot {
                                const std::vector<std::vector<double>> &v,
                                const std::vector<std::vector<double>> &w,
                                double scale = 1.0,
-                               std::string_view line_spec = "");
+                               matplot::string_view line_spec = "");
 
         /// Quiver 3d - Automatic x and y - 2d vectors
         vectors_handle quiver3(const std::vector<std::vector<double>> &z,
@@ -1476,7 +1473,7 @@ namespace matplot {
                                const std::vector<std::vector<double>> &w,
                                const std::vector<std::vector<double>> &c,
                                double scale = 1.0,
-                               std::string_view line_spec = "");
+                               matplot::string_view line_spec = "");
 
         /// Quiver 3d - Automatic x and y - 2d vectors no color mapping
         vectors_handle quiver3(const std::vector<std::vector<double>> &z,
@@ -1484,14 +1481,14 @@ namespace matplot {
                                const std::vector<std::vector<double>> &v,
                                const std::vector<std::vector<double>> &w,
                                double scale = 1.0,
-                               std::string_view line_spec = "");
+                               matplot::string_view line_spec = "");
 
         /// Quiver 3d - no color mapping
         vectors_handle
         quiver3(const std::vector<double> &x, const std::vector<double> &y,
                 const std::vector<double> &z, const std::vector<double> &u,
                 const std::vector<double> &v, const std::vector<double> &w,
-                double scale = 1.0, std::string_view line_spec = "");
+                double scale = 1.0, matplot::string_view line_spec = "");
 
         /// Fence - Core function
         surface_handle fence(const std::vector<std::vector<double>> &X,
@@ -1549,7 +1546,7 @@ namespace matplot {
         surface_handle fsurf(fcontour_function_type fn,
                              const std::array<double, 2> &x_range,
                              const std::array<double, 2> &y_range,
-                             std::string_view line_spec = "",
+                             matplot::string_view line_spec = "",
                              double mesh_density = 40);
 
         /// Function surf - Parametric
@@ -1557,13 +1554,13 @@ namespace matplot {
         fsurf(fcontour_function_type funx, fcontour_function_type funy,
               fcontour_function_type funz, const std::array<double, 2> &u_range,
               const std::array<double, 2> &v_range,
-              std::string_view line_spec = "", double mesh_density = 40);
+              matplot::string_view line_spec = "", double mesh_density = 40);
 
         /// Function surf
         /// Grid / Both ranges in the same array size 4
         surface_handle fsurf(fcontour_function_type fn,
                              const std::array<double, 4> &xy_range,
-                             std::string_view line_spec = "",
+                             matplot::string_view line_spec = "",
                              double mesh_density = 40);
 
         /// Parametric / Both ranges in the same array size 4
@@ -1571,14 +1568,14 @@ namespace matplot {
                              fcontour_function_type funy,
                              fcontour_function_type funz,
                              const std::array<double, 4> &uv_range,
-                             std::string_view line_spec = "",
+                             matplot::string_view line_spec = "",
                              double mesh_density = 40);
 
         /// Function surf
         /// Grid / Both ranges in the same array size 2
         surface_handle fsurf(fcontour_function_type fn,
                              const std::array<double, 2> &xy_range = {-5, +5},
-                             std::string_view line_spec = "",
+                             matplot::string_view line_spec = "",
                              double mesh_density = 40);
 
         /// Function surf
@@ -1587,14 +1584,14 @@ namespace matplot {
                              fcontour_function_type funy,
                              fcontour_function_type funz,
                              const std::array<double, 2> &uv_range = {-5, +5},
-                             std::string_view line_spec = "",
+                             matplot::string_view line_spec = "",
                              double mesh_density = 40);
 
         /// Function surf
         /// Grid / Both ranges in the same array size 2
         surface_handle fsurf(fcontour_function_type fn,
                              std::initializer_list<double> &xy_range,
-                             std::string_view line_spec = "",
+                             matplot::string_view line_spec = "",
                              double mesh_density = 40) {
             if (xy_range.size() == 2) {
                 return fsurf(fn, to_array<2>(xy_range), line_spec,
@@ -1613,7 +1610,7 @@ namespace matplot {
                                     fcontour_function_type funy,
                                     fcontour_function_type funz,
                                     std::initializer_list<double> &uv_range,
-                                    std::string_view line_spec = "",
+                                    matplot::string_view line_spec = "",
                                     double mesh_density = 40) {
             if (uv_range.size() == 2) {
                 return fsurf(funx, funy, funz, to_array<2>(uv_range), line_spec,
@@ -1657,7 +1654,7 @@ namespace matplot {
                             const std::vector<std::vector<double>> &Y,
                             const std::vector<std::vector<double>> &Z,
                             const std::vector<std::vector<double>> &C = {},
-                            std::string_view line_spec = "");
+                            matplot::string_view line_spec = "");
 
         /// Surf with contour - Core function
         surface_handle surfc(const std::vector<std::vector<double>> &X,
@@ -1676,11 +1673,11 @@ namespace matplot {
         network_handle
         graph(const std::vector<std::pair<size_t, size_t>> &edges,
               const std::vector<double> &weights = {}, size_t n_vertices = 0,
-              std::string_view line_spec = "-o");
+              matplot::string_view line_spec = "-o");
 
         network_handle
         graph(const std::vector<std::pair<size_t, size_t>> &edges,
-              std::string_view line_spec);
+              matplot::string_view line_spec);
 
         /// B&W image show - Core function
         matrix_handle
@@ -1732,11 +1729,11 @@ namespace matplot {
                            const std::vector<std::string> &texts);
 
         /// Annotate plot with single text
-        labels_handle text(double x, double y, std::string_view str);
+        labels_handle text(double x, double y, matplot::string_view str);
 
         /// Annotate plot with same text at many positions
         labels_handle text(const std::vector<double> &x,
-                           const std::vector<double> &y, std::string_view str);
+                           const std::vector<double> &y, matplot::string_view str);
 
         /// Annotate plot with arrow
         vectors_handle arrow(double x1, double y1, double x2, double y2);
@@ -1747,7 +1744,7 @@ namespace matplot {
         /// Annotate plot with text and arrow
         std::pair<labels_handle, vectors_handle>
         textarrow(double x1, double y1, double x2, double y2,
-                  std::string_view str);
+                  matplot::string_view str);
 
         /// Annotate plot with rectangle
         line_handle rectangle(double x, double y, double w, double h,
@@ -1755,12 +1752,12 @@ namespace matplot {
 
         /// Annotate plot with text in a box
         std::pair<labels_handle, line_handle>
-        textbox(double x, double y, double w, double h, std::string_view str);
+        textbox(double x, double y, double w, double h, matplot::string_view str);
 
         /// Annotate plot with a filled polygon
         line_handle fill(const std::vector<double> &x,
                          const std::vector<double> &y,
-                         std::string_view line_spec = "");
+                         matplot::string_view line_spec = "");
 
         line_handle ellipse(double x, double y, double w, double h);
 
@@ -1770,19 +1767,19 @@ namespace matplot {
         template <class T1, class T2>
         line_handle plot(const IterableValues<T1> &x,
                          const IterableValues<T2> &y,
-                         std::string_view line_spec = "") {
+                         matplot::string_view line_spec = "") {
             return plot(to_vector_1d(x), to_vector_1d(y), line_spec);
         }
 
         template <class T1>
         line_handle plot(const IterableValues<T1> &y,
-                         std::string_view line_spec = "") {
+                         matplot::string_view line_spec = "") {
             return plot(to_vector_1d(y), line_spec);
         }
 
         template <class T1, class T2, class... Args>
         auto plot(const IterableValues<T1> &x, const IterableValues<T2> &y,
-                  std::string_view line_spec, Args &&...args) {
+                  matplot::string_view line_spec, Args &&...args) {
             return plot(to_vector_1d(x), to_vector_1d(y), line_spec,
                         std::forward<Args>(args)...);
         }
@@ -1795,7 +1792,7 @@ namespace matplot {
         }
 
         template <class T1, class... Args>
-        auto plot(const IterableValues<T1> &y, std::string_view line_spec,
+        auto plot(const IterableValues<T1> &y, matplot::string_view line_spec,
                   Args &&...args) {
             return plot(to_vector_1d(y), line_spec,
                         std::forward<Args>(args)...);
@@ -1804,13 +1801,13 @@ namespace matplot {
         template <class T1, class T2>
         std::vector<line_handle> plot(const IterableValues<T1> &x,
                                       const IterableIterables<T2> &Y,
-                                      std::string_view line_spec = "") {
+                                      matplot::string_view line_spec = "") {
             return plot(to_vector_1d(x), to_vector_2d(Y), line_spec);
         }
 
         template <class T1>
         std::vector<line_handle> plot(const IterableIterables<T1> &Y,
-                                      std::string_view line_spec = "") {
+                                      matplot::string_view line_spec = "") {
             return plot(to_vector_2d(Y), line_spec);
         }
 
@@ -1823,30 +1820,30 @@ namespace matplot {
         template <class T1, class T2, class T3>
         line_handle
         plot3(const IterableValues<T1> &x, const IterableValues<T2> &y,
-              const IterableValues<T3> &z, std::string_view line_spec = "") {
+              const IterableValues<T3> &z, matplot::string_view line_spec = "") {
             return plot3(to_vector_1d(x), to_vector_1d(y), to_vector_1d(z),
                          line_spec);
         }
 
         template <class T1, class T2, class T3>
-        std::enable_if_t<is_iterable_value_v<T3>, std::vector<line_handle>>
+        typename std::enable_if<is_iterable_value<T3>::value, std::vector<line_handle>>::type
         plot3(const IterableIterables<T1> &X, const IterableIterables<T2> &Y,
-              const IterableValues<T3> &z, std::string_view line_spec = "") {
+              const IterableValues<T3> &z, matplot::string_view line_spec = "") {
             return plot3(to_vector_2d(X), to_vector_2d(Y), to_vector_1d(z),
                          line_spec);
         }
 
         template <class T1, class T2, class T3>
-        std::enable_if_t<is_iterable_iterable_v<T3>, std::vector<line_handle>>
+        typename std::enable_if<is_iterable_iterable<T3>::value, std::vector<line_handle>>::type
         plot3(const IterableIterables<T1> &X, const IterableIterables<T2> &Y,
-              const IterableIterables<T3> &Z, std::string_view line_spec = "") {
+              const IterableIterables<T3> &Z, matplot::string_view line_spec = "") {
             return plot3(to_vector_2d(X), to_vector_2d(Y), to_vector_2d(Z),
                          line_spec);
         }
 
         template <class T1, class T2, class T3, class... Args>
         auto plot3(const IterableValues<T1> &x, const IterableValues<T2> &y,
-                   const IterableValues<T3> &z, std::string_view line_spec,
+                   const IterableValues<T3> &z, matplot::string_view line_spec,
                    Args &&...args) {
             return plot3(to_vector_1d(x), to_vector_1d(y), to_vector_1d(z),
                          line_spec, std::forward<Args>(args)...);
@@ -1861,7 +1858,7 @@ namespace matplot {
         }
 
         template <class T1, class... Args>
-        auto plot3(const IterableValues<T1> &z, std::string_view line_spec,
+        auto plot3(const IterableValues<T1> &z, matplot::string_view line_spec,
                    Args &&...args) {
             return plot3(to_vector_1d(z), line_spec,
                          std::forward<Args>(args)...);
@@ -1870,39 +1867,39 @@ namespace matplot {
         template <class T1, class T2>
         stair_handle stairs(const IterableValues<T1> &x,
                             const IterableValues<T2> &y,
-                            std::string_view line_spec = "") {
+                            matplot::string_view line_spec = "") {
             return stairs(to_vector_1d(x), to_vector_1d(y), line_spec);
         }
 
         template <class T1>
         stair_handle stairs(const IterableValues<T1> &y,
-                            std::string_view line_spec = "") {
+                            matplot::string_view line_spec = "") {
             return stairs(to_vector_1d(y), line_spec);
         }
 
         template <class T1, class T2>
-        std::enable_if_t<is_iterable_value_v<T1>, std::vector<stair_handle>>
+        typename std::enable_if<is_iterable_value<T1>::value, std::vector<stair_handle>>::type
         stairs(const IterableValues<T1> &x, const IterableIterables<T2> &Y,
-               std::string_view line_spec = "") {
+               matplot::string_view line_spec = "") {
             return stairs(to_vector_1d(x), to_vector_2d(Y), line_spec);
         }
 
         template <class T1, class T2>
-        std::enable_if_t<is_iterable_iterable_v<T1>, std::vector<stair_handle>>
+        typename std::enable_if<is_iterable_iterable<T1>::value, std::vector<stair_handle>>::type
         stairs(const IterableIterables<T1> &X, const IterableIterables<T2> &Y,
-               std::string_view line_spec = "") {
+               matplot::string_view line_spec = "") {
             return stairs(to_vector_2d(X), to_vector_2d(Y), line_spec);
         }
 
         template <class T1>
         std::vector<stair_handle> stairs(const IterableIterables<T1> &Y,
-                                         std::string_view line_spec = "") {
+                                         matplot::string_view line_spec = "") {
             return stairs(to_vector_2d(Y), line_spec);
         }
 
         template <class T1, class T2, class... Args>
         auto stairs(const IterableValues<T1> &x, const IterableValues<T2> &y,
-                    std::string_view line_spec, Args &&...args) {
+                    matplot::string_view line_spec, Args &&...args) {
             return stairs(to_vector_1d(x), to_vector_1d(y), line_spec,
                           std::forward<Args>(args)...);
         }
@@ -1915,7 +1912,7 @@ namespace matplot {
         }
 
         template <class T1, class... Args>
-        auto stairs(const IterableValues<T1> &y, std::string_view line_spec,
+        auto stairs(const IterableValues<T1> &y, matplot::string_view line_spec,
                     Args &&...args) {
             return stairs(to_vector_1d(y), line_spec,
                           std::forward<Args>(args)...);
@@ -1926,7 +1923,7 @@ namespace matplot {
         errorbar(const IterableValues<T1> &x, const IterableValues<T2> &y,
                  const IterableValues<T3> &error,
                  error_bar::type type = error_bar::type::vertical,
-                 std::string_view line_spec = "") {
+                 matplot::string_view line_spec = "") {
             return errorbar(to_vector_1d(x), to_vector_1d(y),
                             to_vector_1d(error), type, line_spec);
         }
@@ -1938,7 +1935,7 @@ namespace matplot {
                                   const IterableValues<T4> &y_pos_delta,
                                   const IterableValues<T5> &x_neg_delta,
                                   const IterableValues<T6> &x_pos_delta,
-                                  std::string_view line_spec = "") {
+                                  matplot::string_view line_spec = "") {
             return errorbar(
                 to_vector_1d(x), to_vector_1d(y), to_vector_1d(y_neg_delta),
                 to_vector_1d(y_pos_delta), to_vector_1d(x_neg_delta),
@@ -1949,7 +1946,7 @@ namespace matplot {
         error_bar_handle errorbar(const IterableValues<T1> &x,
                                   const IterableValues<T2> &y,
                                   const IterableValues<T3> &y_error,
-                                  std::string_view line_spec) {
+                                  matplot::string_view line_spec) {
             return errorbar(to_vector_1d(x), to_vector_1d(y),
                             to_vector_1d(y_error), line_spec);
         }
@@ -1958,7 +1955,7 @@ namespace matplot {
         std::vector<filled_area_handle>
         area(const IterableValues<T1> &x, const IterableIterables<T2> &Y,
              double base_value = 0., bool stacked = true,
-             std::string_view line_spec = "k-") {
+             matplot::string_view line_spec = "k-") {
             return area(to_vector_1d(x), to_vector_2d(Y), base_value, stacked,
                         line_spec);
         }
@@ -1967,7 +1964,7 @@ namespace matplot {
         filled_area_handle area(const IterableValues<T1> &x,
                                 const IterableValues<T2> &y,
                                 double base_value = 0., bool stacked = true,
-                                std::string_view line_spec = "k-") {
+                                matplot::string_view line_spec = "k-") {
             return area(to_vector_1d(x), to_vector_1d(y), base_value, stacked,
                         line_spec);
         }
@@ -1975,21 +1972,21 @@ namespace matplot {
         template <class T1>
         std::vector<filled_area_handle>
         area(const IterableIterables<T1> &Y, double base_value = 0.,
-             bool stacked = true, std::string_view line_spec = "k-") {
+             bool stacked = true, matplot::string_view line_spec = "k-") {
             return area(to_vector_2d(Y), base_value, stacked, line_spec);
         }
 
         template <class T1>
         std::vector<filled_area_handle>
         area(const IterableIterables<T1> &Y, bool stacked,
-             std::string_view line_spec = "k-") {
+             matplot::string_view line_spec = "k-") {
             return area(to_vector_2d(Y), stacked, line_spec);
         }
 
         template <class T1>
         filled_area_handle area(const IterableValues<T1> &y,
                                 double base_value = 0., bool stacked = true,
-                                std::string_view line_spec = "k-") {
+                                matplot::string_view line_spec = "k-") {
             return area(to_vector_1d(y), base_value, stacked, line_spec);
         }
 
@@ -2068,13 +2065,13 @@ namespace matplot {
         }
 
         template <class T1>
-        std::enable_if_t<is_iterable_value_v<T1>, box_chart_handle>
+        typename std::enable_if<is_iterable_value<T1>::value, box_chart_handle>::type
         boxplot(const IterableValues<T1> &data) {
             return boxplot(to_vector_1d(data));
         }
 
         template <class T1>
-        std::enable_if_t<is_iterable_iterable_v<T1>, box_chart_handle>
+        typename std::enable_if<is_iterable_iterable<T1>::value, box_chart_handle>::type
         boxplot(const IterableIterables<T1> &data) {
             return boxplot(to_vector_2d(data));
         }
@@ -2092,25 +2089,25 @@ namespace matplot {
         }
 
         template <class T1, class T2>
-        std::enable_if_t<is_iterable_value_v<T2>, bars_handle>
+        typename std::enable_if<is_iterable_value<T2>::value, bars_handle>::type
         bar(const IterableValues<T1> &x, const IterableValues<T2> &y) {
             return bar(to_vector_1d(x), to_vector_1d(y));
         }
 
         template <class T1>
-        std::enable_if_t<is_iterable_value_v<T1>, bars_handle>
+        typename std::enable_if<is_iterable_value<T1>::value, bars_handle>::type
         bar(const IterableValues<T1> &y) {
             return bar(to_vector_1d(y));
         }
 
         template <class T1>
-        std::enable_if_t<is_iterable_iterable_v<T1>, bars_handle>
+        typename std::enable_if<is_iterable_iterable<T1>::value, bars_handle>::type
         bar(const IterableIterables<T1> &Y) {
             return bar(to_vector_2d(Y));
         }
 
         template <class T1, class T2>
-        std::enable_if_t<is_iterable_iterable_v<T2>, bars_handle>
+        typename std::enable_if<is_iterable_iterable<T2>::value, bars_handle>::type
         bar(const IterableValues<T1> &x, const IterableIterables<T2> &Y) {
             return bar(to_vector_1d(x), to_vector_2d(Y));
         }
@@ -2144,14 +2141,14 @@ namespace matplot {
         template <class T1, class T2>
         parallel_lines_handle parallelplot(const IterableIterables<T1> &X,
                                            const IterableValues<T2> &colors,
-                                           std::string_view line_spec = "") {
+                                           matplot::string_view line_spec = "") {
             return parallelplot(to_vector_2d(X), to_vector_1d(colors),
                                 line_spec);
         }
 
         template <class T1>
         parallel_lines_handle parallelplot(const IterableIterables<T1> &X,
-                                           std::string_view line_spec = "") {
+                                           matplot::string_view line_spec = "") {
             return parallelplot(to_vector_2d(X), line_spec);
         }
 
@@ -2191,7 +2188,7 @@ namespace matplot {
                              const IterableValues<T3> &z,
                              const IterableValues<T4> &sizes = {},
                              const IterableValues<T5> &colors = {},
-                             std::string_view line_spec = "o") {
+                             matplot::string_view line_spec = "o") {
             return scatter3(to_vector_1d(x), to_vector_1d(y), to_vector_1d(z),
                             to_vector_1d(sizes), to_vector_1d(colors),
                             line_spec);
@@ -2200,7 +2197,7 @@ namespace matplot {
         template <class T1, class T2, class T3>
         line_handle
         scatter3(const IterableValues<T1> &x, const IterableValues<T2> &y,
-                 const IterableValues<T3> &z, std::string_view line_spec) {
+                 const IterableValues<T3> &z, matplot::string_view line_spec) {
             return scatter3(to_vector_1d(x), to_vector_1d(y), to_vector_1d(z),
                             line_spec);
         }
@@ -2215,9 +2212,9 @@ namespace matplot {
 
         template <class T1, class T2>
         labels_handle
-        wordcloud(std::string_view text,
+        wordcloud(matplot::string_view text,
                   const std::vector<std::string> &black_list,
-                  std::string_view delimiters = " ',\n\r\t\".!?:;",
+                  matplot::string_view delimiters = " ',\n\r\t\".!?:;",
                   size_t max_cloud_size = 100,
                   const IterableValues<T1> &custom_colors = {}) {
             return wordcloud(text, black_list, delimiters, max_cloud_size,
@@ -2235,33 +2232,33 @@ namespace matplot {
         template <class T1, class T2>
         line_handle stem(const IterableValues<T1> &x,
                          const IterableValues<T2> &y,
-                         std::string_view line_spec = "-o") {
+                         matplot::string_view line_spec = "-o") {
             return stem(to_vector_1d(x), to_vector_1d(y), line_spec);
         }
 
         template <class T1>
         line_handle stem(const IterableValues<T1> &y,
-                         std::string_view line_spec = "-o") {
+                         matplot::string_view line_spec = "-o") {
             return stem(to_vector_1d(y), line_spec);
         }
 
         template <class T1, class T2>
         std::vector<line_handle> stem(const IterableValues<T1> &x,
                                       const IterableIterables<T2> &Y,
-                                      std::string_view line_spec = "-o") {
+                                      matplot::string_view line_spec = "-o") {
             return stem(to_vector_1d(x), to_vector_2d(Y), line_spec);
         }
 
         template <class T1>
         std::vector<line_handle> stem(const IterableIterables<T1> &Y,
-                                      std::string_view line_spec = "-o") {
+                                      matplot::string_view line_spec = "-o") {
             return stem(to_vector_2d(Y), line_spec);
         }
 
         template <class T1, class T2, class T3>
         line_handle
         stem3(const IterableValues<T1> &x, const IterableValues<T2> &y,
-              const IterableValues<T3> &z, std::string_view line_spec = "-o") {
+              const IterableValues<T3> &z, matplot::string_view line_spec = "-o") {
             return stem3(to_vector_1d(x), to_vector_1d(y), to_vector_1d(z),
                          line_spec);
         }
@@ -2269,22 +2266,23 @@ namespace matplot {
         template <class T1, class T2, class T3>
         std::vector<line_handle>
         stem3(const IterableIterables<T1> &X, const IterableIterables<T2> &Y,
-              const IterableValues<T3> &z, std::string_view line_spec = "-o") {
+              const IterableValues<T3> &z, matplot::string_view line_spec = "-o") {
             return stem3(to_vector_2d(X), to_vector_2d(Y), to_vector_1d(z),
                          line_spec);
         }
 
         template <class T1>
         line_handle stem3(const IterableValues<T1> &z,
-                          std::string_view line_spec = "-o") {
+                          matplot::string_view line_spec = "-o") {
             return stem3(to_vector_1d(z), line_spec);
         }
 
         template <class T1, class T2>
         line_handle stem3(const IterableIterables<T1> &Z,
-                          std::string_view line_spec = "-o") {
+                          matplot::string_view line_spec = "-o") {
             return stem3(to_vector_2d(Z), line_spec);
         }
+#    if defined PLOT_GEOPLOT
 
         template <class T1, class T2, class T3, class T4>
         circles_handle geobubble(const IterableValues<T1> &latitude,
@@ -2307,7 +2305,7 @@ namespace matplot {
         template <class T1, class T2>
         line_handle geoplot(const IterableValues<T1> &latitude,
                             const IterableValues<T2> &longitude,
-                            std::string_view line_spec = "") {
+                            matplot::string_view line_spec = "") {
             return geoplot(to_vector_1d(latitude), to_vector_1d(longitude),
                            line_spec);
         }
@@ -2320,11 +2318,12 @@ namespace matplot {
             return geoscatter(to_vector_1d(latitude), to_vector_1d(longitude),
                               to_vector_1d(sizes), to_vector_1d(colors));
         }
+        #endif
 
         template <class T1, class T2>
         vectors_handle compass(const IterableValues<T1> &x,
                                const IterableValues<T2> &y,
-                               std::string_view line_spec = "") {
+                               matplot::string_view line_spec = "") {
             return compass(to_vector_1d(x), to_vector_1d(y), line_spec);
         }
 
@@ -2337,7 +2336,7 @@ namespace matplot {
         template <class T1, class T2>
         line_handle polarplot(const IterableValues<T1> &theta,
                               const IterableValues<T2> &rho,
-                              std::string_view line_spec = "") {
+                              matplot::string_view line_spec = "") {
             return polarplot(to_vector_1d(theta), to_vector_1d(rho), line_spec);
         }
 
@@ -2347,7 +2346,7 @@ namespace matplot {
                      const IterableValues<T2> &rho,
                      const IterableValues<T3> &sizes = std::vector<double>{},
                      const IterableValues<T4> &colors = std::vector<double>{},
-                     std::string_view line_spec = "o") {
+                     matplot::string_view line_spec = "o") {
             return polarscatter(to_vector_1d(theta), to_vector_1d(rho),
                                 to_vector_1d(sizes), to_vector_1d(colors),
                                 line_spec);
@@ -2356,7 +2355,7 @@ namespace matplot {
         template <class T1, class T2>
         line_handle polarscatter(const IterableValues<T1> &theta,
                                  const IterableValues<T2> &rho, double size,
-                                 std::string_view line_spec = "o") {
+                                 matplot::string_view line_spec = "o") {
             return polarscatter(to_vector_1d(theta), to_vector_1d(rho), size,
                                 line_spec);
         }
@@ -2364,7 +2363,7 @@ namespace matplot {
         template <class T1, class T2>
         line_handle polarscatter(const IterableValues<T1> &theta,
                                  const IterableValues<T2> &rho,
-                                 std::string_view line_spec) {
+                                 matplot::string_view line_spec) {
             return polarscatter(to_vector_1d(theta), to_vector_1d(rho), size,
                                 line_spec);
         }
@@ -2374,7 +2373,7 @@ namespace matplot {
         contour(const IterableIterables<T1> &X, const IterableIterables<T2> &Y,
                 const IterableIterables<T3> &Z,
                 const IterableValues<T4> &levels,
-                std::string_view line_spec = "", size_t n_levels = 0) {
+                matplot::string_view line_spec = "", size_t n_levels = 0) {
             return contour(to_vector_2d(X), to_vector_2d(Y), to_vector_2d(Z),
                            to_vector_1d(levels), line_spec, n_levels);
         }
@@ -2383,7 +2382,7 @@ namespace matplot {
         contours_handle
         contour(const IterableIterables<T1> &X, const IterableIterables<T2> &Y,
                 const IterableIterables<T3> &Z, size_t n_levels = 0,
-                std::string_view line_spec = "") {
+                matplot::string_view line_spec = "") {
             return contour(to_vector_2d(X), to_vector_2d(Y), to_vector_2d(Z),
                            n_levels, line_spec);
         }
@@ -2391,7 +2390,7 @@ namespace matplot {
         template <class T1, class T2, class T3>
         contours_handle
         contour(const IterableIterables<T1> &X, const IterableIterables<T1> &Y,
-                const IterableIterables<T1> &Z, std::string_view line_spec) {
+                const IterableIterables<T1> &Z, matplot::string_view line_spec) {
             return contour(to_vector_2d(X), to_vector_2d(Y), to_vector_2d(Z),
                            line_spec);
         }
@@ -2401,7 +2400,7 @@ namespace matplot {
         contourf(const IterableIterables<T1> &X, const IterableIterables<T2> &Y,
                  const IterableIterables<T3> &Z,
                  const IterableValues<T4> &levels,
-                 std::string_view line_spec = "", size_t n_levels = 0) {
+                 matplot::string_view line_spec = "", size_t n_levels = 0) {
             return contourf(to_vector_2d(X), to_vector_2d(Y), to_vector_2d(Z),
                             to_vector_1d(levels), line_spec, n_levels);
         }
@@ -2410,7 +2409,7 @@ namespace matplot {
         contours_handle
         contourf(const IterableIterables<T1> &X, const IterableIterables<T2> &Y,
                  const IterableIterables<T3> &Z, size_t n_levels = 0,
-                 std::string_view line_spec = "") {
+                 matplot::string_view line_spec = "") {
             return contourf(to_vector_2d(X), to_vector_2d(Y), to_vector_2d(Z),
                             n_levels, line_spec);
         }
@@ -2418,7 +2417,7 @@ namespace matplot {
         template <class T1, class T2, class T3>
         contours_handle
         contourf(const IterableIterables<T1> &X, const IterableIterables<T2> &Y,
-                 const IterableIterables<T3> &Z, std::string_view line_spec) {
+                 const IterableIterables<T3> &Z, matplot::string_view line_spec) {
             return contourf(to_vector_2d(X), to_vector_2d(Y), to_vector_2d(Z),
                             line_spec);
         }
@@ -2427,7 +2426,7 @@ namespace matplot {
         contours_handle fcontour(fcontour_function_type fn,
                                  const std::array<double, 4> &xy_range,
                                  IterableValues<T1> levels = {},
-                                 std::string_view line_spec = "",
+                                 matplot::string_view line_spec = "",
                                  size_t n_levels = 0) {
             return fcontour(fn, xy_range, to_vector_1d(levels), line_spec,
                             n_levels);
@@ -2436,58 +2435,67 @@ namespace matplot {
         template <class T1, class T2>
         vectors_handle feather(const IterableValues<T1> &u,
                                const IterableValues<T2> &v,
-                               std::string_view line_spec = "") {
+                               matplot::string_view line_spec = "") {
             return feather(to_vector_1d(u), to_vector_1d(v), line_spec);
         }
 
         template <class T1, class T2, class T3, class T4>
-        std::enable_if_t<is_iterable_value_v<T1> && is_iterable_value_v<T2> &&
-                             is_iterable_value_v<T3> && is_iterable_value_v<T4>,
-                         vectors_handle>
+        typename std::enable_if<is_iterable_value<T1>::value &&
+                                is_iterable_value<T2>::value &&
+                                is_iterable_value<T3>::value &&
+                                is_iterable_value<T4>::value,
+                         vectors_handle>::type
         quiver(const IterableValues<T1> &x, const IterableValues<T2> &y,
                const IterableValues<T3> &u, const IterableValues<T4> &v,
-               double scale = 1.0, std::string_view line_spec = "") {
+               double scale = 1.0, matplot::string_view line_spec = "") {
             return quiver(to_vector_1d(x), to_vector_1d(y), to_vector_1d(u),
                           to_vector_1d(v), scale, line_spec);
         }
 
         template <class T1, class T2, class T3, class T4>
-        std::enable_if_t<
-            is_iterable_iterable_v<T1> && is_iterable_iterable_v<T2> &&
-                is_iterable_iterable_v<T3> && is_iterable_iterable_v<T4>,
-            vectors_handle>
+        typename std::enable_if<
+            is_iterable_iterable<T1>::value &&
+                is_iterable_iterable<T2>::value &&
+                is_iterable_iterable<T3>::value &&
+                is_iterable_iterable<T4>::value,
+            vectors_handle>::type
         quiver(const IterableIterables<T1> &x, const IterableIterables<T2> &y,
                const IterableIterables<T3> &u, const IterableIterables<T4> &v,
-               double scale = 1.0, std::string_view line_spec = "") {
+               double scale = 1.0, matplot::string_view line_spec = "") {
             return quiver(to_vector_2d(x), to_vector_2d(y), to_vector_2d(u),
                           to_vector_2d(v), scale, line_spec);
         }
 
         template <class T1, class T2, class T3, class T4, class T5, class T6>
-        std::enable_if_t<is_iterable_value_v<T1> && is_iterable_value_v<T2> &&
-                             is_iterable_value_v<T3> &&
-                             is_iterable_value_v<T4> &&
-                             is_iterable_value_v<T5> && is_iterable_value_v<T6>,
-                         vectors_handle>
+        typename std::enable_if<is_iterable_value<T1>::value &&
+                                is_iterable_value<T2>::value &&
+                             is_iterable_value<T3>::value &&
+                             is_iterable_value<T4>::value &&
+                                is_iterable_value<T5>::value &&
+                                is_iterable_value<T6>::value,
+                         vectors_handle>::type
         quiver3(const IterableValues<T1> &x, const IterableValues<T2> &y,
                 const IterableValues<T3> &z, const IterableValues<T4> &u,
                 const IterableValues<T5> &v, const IterableValues<T6> &w,
-                double scale = 1.0, std::string_view line_spec = "") {
+                double scale = 1.0, matplot::string_view line_spec = "") {
             return quiver3(to_vector_1d(x), to_vector_1d(y), to_vector_1d(z),
                            to_vector_1d(u), to_vector_1d(v), to_vector_1d(w),
                            scale, line_spec);
         }
 
         template <class T1, class T2, class T3, class T4, class T5, class T6>
-        std::enable_if_t<
-            is_iterable_iterable_v<T1> && is_iterable_iterable_v<T2> &&
-                is_iterable_iterable_v<T3> && is_iterable_iterable_v<T4> &&
-                is_iterable_iterable_v<T5> && is_iterable_iterable_v<T6>,
-            vectors_handle>
+        typename std::enable_if<
+            is_iterable_iterable<T1>::value &&
+                is_iterable_iterable<T2>::value &&
+                is_iterable_iterable<T3>::value &&
+                is_iterable_iterable<T4>::value &&
+                is_iterable_iterable<T5>::value &&
+                is_iterable_iterable<T6>::value,
+            vectors_handle>::type
         quiver3(const IterableIterables<T1> &x, const IterableIterables<T2> &y,
                 const IterableIterables<T3> &z, const IterableIterables<T4> &u,
                 const IterableIterables<T5> &v, const IterableIterables<T6> &w,
-                double scale = 1.0, std::string_view line_spec = "") {
+                double scale = 1.0, matplot::string_view line_spec = "") {
             return quiver3(to_vector_2d(x), to_vector_2d(y), to_vector_2d(z),
                            to_vector_2d(u), to_vector_2d(v), to_vector_2d(w),
                            scale, line_spec);
@@ -2497,7 +2505,7 @@ namespace matplot {
         vectors_handle
         quiver3(const IterableIterables<T1> &z, const IterableIterables<T2> &u,
                 const IterableIterables<T3> &v, const IterableIterables<T4> &w,
-                double scale = 1.0, std::string_view line_spec = "") {
+                double scale = 1.0, matplot::string_view line_spec = "") {
             return quiver3(to_vector_2d(z), to_vector_2d(u), to_vector_2d(v),
                            to_vector_2d(w), scale, line_spec);
         }
@@ -2552,7 +2560,7 @@ namespace matplot {
                             const IterableIterables<T2> &Y,
                             const IterableIterables<T3> &Z,
                             const IterableIterables<T4> &C = {},
-                            std::string_view line_spec = "") {
+                            matplot::string_view line_spec = "") {
             return IterableIterables<T1>(to_vector_2d(X), to_vector_2d(Y),
                                          to_vector_2d(Z), to_vector_2d(C),
                                          line_spec);
@@ -2580,14 +2588,14 @@ namespace matplot {
         network_handle graph(const IterableValues<T1> &edges,
                              const IterableValues<T2> &weights = {},
                              size_t n_vertices = 0,
-                             std::string_view line_spec = "-o") {
+                             matplot::string_view line_spec = "-o") {
             return graph(to_vector_1d<T1, std::pair<size_t, size_t>>(edges),
                          to_vector_1d(weights), n_vertices, line_spec);
         }
 
         template <class T1>
         network_handle graph(const IterableValues<T1> &edges,
-                             std::string_view line_spec) {
+                             std::string line_spec) {
             return graph(to_vector_1d<T1, std::pair<size_t, size_t>>(edges),
                          line_spec);
         }
@@ -2664,14 +2672,14 @@ namespace matplot {
 
         template <class T1, class T2>
         labels_handle text(const IterableValues<T1> &x,
-                           const IterableValues<T2> &y, std::string_view str) {
+                           const IterableValues<T2> &y, matplot::string_view str) {
             return text(to_vector_1d(x), to_vector_1d(y), str);
         }
 
         template <class T1, class T2>
         line_handle fill(const IterableValues<T1> &x,
                          const IterableValues<T2> &y,
-                         std::string_view line_spec = "") {
+                         matplot::string_view line_spec = "") {
             return fill(to_vector_1d(x), to_vector_1d(y), line_spec);
         }
 
@@ -2692,37 +2700,37 @@ namespace matplot {
         }
 
         /// Semilogx is a plot variant with log scale on the x axis
-        template <class... Args> auto semilogy(Args &&...args) {
+        template <class... Args> line_handle semilogy(Args &&...args) {
             auto h = this->plot(std::forward<Args>(args)...);
             this->y_axis().scale(axis_type::axis_scale::log);
             return h;
         }
 
         /// If the user tries to use boxchart instead of boxplot, it also works
-        template <class T1, class... Args> auto boxchart(Args &&...args) {
+        template <class T1, class... Args> box_chart_handle boxchart(Args &&...args) {
             return boxplot(std::forward<Args>(args)...);
         }
 
         /// The function hist2 is equivalent to binscatter (usually with a
         /// heatmap)
-        template <class... Args> auto hist2(Args &&...args) {
+        template <class... Args> axes_object_handle hist2(Args &&...args) {
             return binscatter(std::forward<Args>(args)...);
         }
 
         /// Directed graph
-        template <class... Args> auto digraph(Args &&...args) {
+        template <class... Args> network_handle digraph(Args &&...args) {
             auto l = graph(std::forward<Args>(args)...);
             l->directed(true);
             return l;
         }
 
         /// Show array as image and scale the colorbar
-        template <class... Args> auto imagesc(Args &&...args) {
+        template <class... Args> matrix_handle imagesc(Args &&...args) {
             return image(std::forward<Args>(args)..., true);
         }
 
         /// Show array as image and scale the colorbar
-        template <class... Args> auto polygon(Args &&...args) {
+        template <class... Args> line_handle polygon(Args &&...args) {
             return fill(std::forward<Args>(args)...);
         }
 
@@ -2803,11 +2811,11 @@ namespace matplot {
 
         bool cb_vertical_{true};
         bool cb_inside_{false};
-        std::array<float, 4> cb_position_{0., 0., 0., 0.};
+        std::array<float, 4> cb_position_{{0., 0., 0., 0.}};
 
         // {x, y, width, height}
         std::array<float, 4> position_{default_axes_position};
-        std::array<float, 4> margin_{0.0, 0.0, 0.0, 0.0};
+        std::array<float, 4> margin_{{0.0, 0.0, 0.0, 0.0}};
 
         // 3d view
         float azimuth_ = -37.5;
@@ -2818,8 +2826,8 @@ namespace matplot {
         bool axes_aspect_ratio_auto_{true};
 
         // text
-        std::optional<float> font_size_{10.f};
-        std::optional<std::string> font_{"Helvetica"};
+        float font_size_{10.f};
+        std::string font_{"Helvetica"};
         std::string font_weight_{"normal"};
 
         // title text
@@ -2828,11 +2836,11 @@ namespace matplot {
         bool title_enhanced_{true};
         float title_font_size_multiplier_{1.1f};
         std::string title_font_weight_{"bold"};
-        color_array title_color_{0, 0, 0, 0};
+        color_array title_color_{{0, 0, 0, 0}};
 
         // colors for children object
-        std::array<float, 4> color_{0, 1.0, 1.0, 1.0};
-        std::array<float, 4> color_outside_{0, 0.97f, 0.97f, 0.97f};
+        std::array<float, 4> color_{{0, 1.0, 1.0, 1.0}};
+        std::array<float, 4> color_outside_{{0, 0.97f, 0.97f, 0.97f}};
         std::vector<std::array<float, 4>> colororder_{
             default_color(0), default_color(1), default_color(2),
             default_color(3), default_color(4), default_color(5),
@@ -2844,7 +2852,7 @@ namespace matplot {
         // complete box around the axes
         bool box_{true};
         bool box_full_{false};
-        std::array<float, 4> box_color_{.0, .0, .0, .0};
+        std::array<float, 4> box_color_{{.0, .0, .0, .0}};
 
         // grid inside the axes
         line_spec grid_line_style_{"-"};

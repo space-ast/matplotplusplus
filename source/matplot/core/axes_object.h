@@ -39,7 +39,7 @@ namespace matplot {
         virtual axes_category axes_category();
         virtual bool requires_colormap();
         virtual std::string tag();
-        virtual void tag(std::string_view);
+        virtual void tag(matplot::string_view);
         bool is_3d();
         bool is_3d_map();
         bool is_2d();
@@ -56,7 +56,7 @@ namespace matplot {
 
         // Create a legend string for this object
         // https://stackoverflow.com/questions/60617211/how-to-put-a-rectangle-in-the-key-with-same-hue-as-a-shaded-area-in-gnuplot/60624922#60624922
-        virtual std::string legend_string(std::string_view legend);
+        virtual std::string legend_string(matplot::string_view legend);
 
         // Take a number of legends from the range [legends_begin, legends_end]
         // and advance the legends_begin iterator.
@@ -80,7 +80,7 @@ namespace matplot {
         // In this case, we use the display name for legends
         // instead of the strings in the legends object
         const std::string &display_name() const;
-        void display_name(std::string_view display_name);
+        void display_name(matplot::string_view display_name);
 
       protected:
         std::string tag_{"axes_object"};

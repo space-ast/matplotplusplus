@@ -15,8 +15,8 @@ namespace matplot {
     class MATPLOT_EXPORTS string_function : public line {
       public:
         explicit string_function(class axes_type *parent);
-        string_function(class axes_type *parent, std::string_view equation,
-                        std::string_view line_spec = "");
+        string_function(class axes_type *parent, matplot::string_view equation,
+                        matplot::string_view line_spec = "");
 
         /// If we receive an axes_handle, we can convert it to a raw
         /// pointer because there is no ownership involved here
@@ -35,7 +35,7 @@ namespace matplot {
 
       public:
         const std::string &equation() const;
-        class string_function &equation(std::string_view equation);
+        class string_function &equation(matplot::string_view equation);
 
       private:
         std::string equation_;

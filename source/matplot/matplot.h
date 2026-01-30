@@ -48,4 +48,7 @@
 #include <matplot/freestanding/histcounts.h>
 #include <matplot/freestanding/plot.h>
 
+// visitor
+#include <matplot/util/visitor.h>
+
 #endif // MATPLOTPLUSPLUS_MATPLOT_H

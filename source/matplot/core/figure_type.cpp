@@ -1,4 +1,4 @@
-//
+﻿//
 // Created by Alan Freitas on 2020-07-03.
 //
 
@@ -63,16 +63,9 @@ namespace matplot {
         // "touch" for some reason
         is_plotting_ = true;
 
-        // There are two different strategies
-        // Gnuplot backends do not rely on vertices
-        // because that would be very ineficient
-        // So we unfortunately need a different strategy
-        // for gnuplot
-        if (!backend_->consumes_gnuplot_commands()) {
-            send_draw_commands();
-        } else {
-            send_gnuplot_draw_commands();
-        }
+        backend_->draw(this);
+
+
         backend_->render_data();
 
         is_plotting_ = false;
@@ -183,7 +176,7 @@ namespace matplot {
         run_command("plot 2 with lines");
     }
 
-    void figure_type::name(std::string_view name) {
+    void figure_type::name(matplot::string_view name) {
         name_ = name;
         touch();
     }
@@ -201,7 +194,7 @@ namespace matplot {
         touch();
     }
 
-    void figure_type::color(std::string_view c) {
+    void figure_type::color(matplot::string_view c) {
         color(to_array(string_to_color(c)));
     }
 
@@ -308,7 +301,7 @@ namespace matplot {
     axes_handle figure_type::add_axes(axes_handle h, bool replace_if_overlap,
                                       bool replace_if_same_position) {
         auto it = std::find_if(children_.begin(), children_.end(),
-                               [&h](const auto &child) {
+                               [&h](const std::shared_ptr<class axes_type> &child) {
                                    return child->position() == h->position();
                                });
         if (it != children_.end()) {
@@ -434,7 +427,7 @@ namespace matplot {
             *positions.begin() == 1) {
             return this->add_axes(true);
         }
-        std::vector plot_ids = std::vector(positions);
+        auto plot_ids = std::vector<size_t>(positions);
         size_t max_plot_id =
             *std::max_element(plot_ids.begin(), plot_ids.end());
         if (max_plot_id >= rows * cols) {
@@ -680,7 +673,7 @@ namespace matplot {
 
     const std::string &figure_type::font() const { return font_; }
 
-    void figure_type::font(std::string_view font) {
+    void figure_type::font(matplot::string_view font) {
         font_ = font;
         touch();
     }
@@ -694,7 +687,7 @@ namespace matplot {
 
     const std::string &figure_type::title() const { return title_; }
 
-    void figure_type::title(std::string_view title) {
+    void figure_type::title(matplot::string_view title) {
         title_ = title;
         touch();
     }
@@ -752,7 +745,7 @@ namespace matplot {
                std::vector<std::vector<axes_handle>>>
     figure_type::plotmatrix(const std::vector<std::vector<double>> &X,
                             const std::vector<std::vector<double>> &Y,
-                            std::string_view line_spec,
+                            matplot::string_view line_spec,
                             bool histogram_on_diagonals) {
         bool p = this->quiet_mode();
         this->quiet_mode(true);
@@ -771,16 +764,20 @@ namespace matplot {
         std::vector<double> X_min(X.size());
         std::vector<double> X_max(X.size());
         for (size_t i = 0; i < X.size(); ++i) {
-            auto [xmin_it, xmax_it] =
+            auto ret =
                 std::minmax_element(X[i].begin(), X[i].end());
+            auto xmin_it = ret.first;
+            auto xmax_it = ret.second;
             X_min[i] = *xmin_it;
             X_max[i] = *xmax_it;
         }
         std::vector<double> Y_min(Y.size());
         std::vector<double> Y_max(Y.size());
         for (size_t i = 0; i < Y.size(); ++i) {
-            auto [ymin_it, ymax_it] =
+            auto ret =
                 std::minmax_element(Y[i].begin(), Y[i].end());
+            auto ymin_it = ret.first;
+            auto ymax_it = ret.second;
             Y_min[i] = *ymin_it;
             Y_max[i] = *ymax_it;
         }

@@ -183,71 +183,71 @@ namespace matplot {
 
     std::pair<float, float> view(axes_handle ax) { return ax->view(); }
 
-    void title(std::string_view str) { title(gca(), str); }
+    void title(matplot::string_view str) { title(gca(), str); }
 
-    void title(axes_handle ax, std::string_view str) { ax->title(str); }
+    void title(axes_handle ax, matplot::string_view str) { ax->title(str); }
 
-    void title(std::string_view str, const color_array &c) {
+    void title(matplot::string_view str, const color_array &c) {
         auto ax = gca();
         title(ax, str);
         ax->title_color(c);
     }
 
-    void title(axes_handle ax, std::string_view str, const color_array &c) {
+    void title(axes_handle ax, matplot::string_view str, const color_array &c) {
         title(ax, str);
         ax->title_color(c);
     }
 
-    void title(legend_handle lgd, std::string_view str) { lgd->title(str); }
+    void title(legend_handle lgd, matplot::string_view str) { lgd->title(str); }
 
-    void sgtitle(std::string_view str) { sgtitle(gca(), str); }
+    void sgtitle(matplot::string_view str) { sgtitle(gca(), str); }
 
-    void sgtitle(axes_handle ax, std::string_view str) {
+    void sgtitle(axes_handle ax, matplot::string_view str) {
         ax->parent()->title(str);
     }
 
-    void sgtitle(std::string_view str, const color_array &c) {
+    void sgtitle(matplot::string_view str, const color_array &c) {
         auto ax = gca();
         sgtitle(ax, str);
         ax->parent()->title_color(c);
     }
 
-    void sgtitle(axes_handle ax, std::string_view str, const color_array &c) {
+    void sgtitle(axes_handle ax, matplot::string_view str, const color_array &c) {
         sgtitle(ax, str);
         ax->parent()->title_color(c);
     }
 
-    void xlabel(std::string_view str) { xlabel(gca(), str); }
+    void xlabel(matplot::string_view str) { xlabel(gca(), str); }
 
-    void xlabel(axes_handle ax, std::string_view str) { ax->xlabel(str); }
+    void xlabel(axes_handle ax, matplot::string_view str) { ax->xlabel(str); }
 
-    void ylabel(std::string_view str) { ylabel(gca(), str); }
+    void ylabel(matplot::string_view str) { ylabel(gca(), str); }
 
-    void ylabel(axes_handle ax, std::string_view str) { ax->ylabel(str); }
+    void ylabel(axes_handle ax, matplot::string_view str) { ax->ylabel(str); }
 
-    void y2label(std::string_view str) { y2label(gca(), str); }
+    void y2label(matplot::string_view str) { y2label(gca(), str); }
 
-    void y2label(axes_handle ax, std::string_view str) { ax->y2label(str); }
+    void y2label(axes_handle ax, matplot::string_view str) { ax->y2label(str); }
 
-    void zlabel(std::string_view str) { zlabel(gca(), str); }
+    void zlabel(matplot::string_view str) { zlabel(gca(), str); }
 
-    void zlabel(axes_handle ax, std::string_view str) { ax->zlabel(str); }
+    void zlabel(axes_handle ax, matplot::string_view str) { ax->zlabel(str); }
 
-    void xtickformat(std::string_view str) { xtickformat(gca(), str); }
+    void xtickformat(matplot::string_view str) { xtickformat(gca(), str); }
 
-    void xtickformat(axes_handle ax, std::string_view str) {
+    void xtickformat(axes_handle ax, matplot::string_view str) {
         ax->xtickformat(str);
     }
 
-    void ytickformat(std::string_view str) { ytickformat(gca(), str); }
+    void ytickformat(matplot::string_view str) { ytickformat(gca(), str); }
 
-    void ytickformat(axes_handle ax, std::string_view str) {
+    void ytickformat(axes_handle ax, matplot::string_view str) {
         ax->ytickformat(str);
     }
 
-    void ztickformat(std::string_view str) { ztickformat(gca(), str); }
+    void ztickformat(matplot::string_view str) { ztickformat(gca(), str); }
 
-    void ztickformat(axes_handle ax, std::string_view str) {
+    void ztickformat(axes_handle ax, matplot::string_view str) {
         ax->ztickformat(str);
     }
 
@@ -577,7 +577,11 @@ namespace matplot {
         }
         float w = ax->width() * ax->parent()->width();
         float h = ax->height() * ax->parent()->height();
-        auto [xmin, xmax, ymin, ymax] = ax->child_limits();
+        auto ret = ax->child_limits();
+        auto xmin = ret[0];
+        auto xmax = ret[1];
+        auto ymin = ret[2];
+        auto ymax = ret[3];
         double xrange = xmax - xmin;
         double yrange = ymax - ymin;
         // new ranges that could make it proportional
@@ -602,7 +606,11 @@ namespace matplot {
         if (ax->children().empty()) {
             return;
         }
-        auto [xmin, xmax, ymin, ymax] = ax->child_limits();
+        auto ret = ax->child_limits();
+        auto xmin = ret[0];
+        auto xmax = ret[1];
+        auto ymin = ret[2];
+        auto ymax = ret[3];
         ax->x_axis().limits({xmin, xmax});
         ax->y_axis().limits({ymin, ymax});
         if (ax->is_3d() && !ax->is_3d_map()) {

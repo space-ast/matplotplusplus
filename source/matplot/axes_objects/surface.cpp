@@ -14,15 +14,18 @@ namespace matplot {
 
     surface::surface(class axes_type *parent, const vector_2d &X,
                      const vector_2d &Y, const vector_2d &Z, const vector_2d &C,
-                     std::string_view line_spec)
+                     matplot::string_view line_spec)
         : axes_object(parent), X_data_(X), Y_data_(Y), Z_data_(Z), C_data_(C),
           is_parametric_(false), line_spec_(this, line_spec),
           contour_line_spec_(this, "") {
         zmin_ = Z_data_[0][0];
         zmax_ = Z_data_[0][0];
         for (size_t i = 0; i < Z_data_.size(); ++i) {
-            auto [row_min, row_max] =
+
+            auto ret =
                 std::minmax_element(Z_data_[i].begin(), Z_data_[i].end());
+            auto row_min = ret.first;
+            auto row_max = ret.second;
             if (*row_min < zmin_) {
                 zmin_ = *row_min;
             }
@@ -46,7 +49,7 @@ namespace matplot {
     size_t surface::create_line_index() {
         auto it =
             std::find_if(parent_->children().begin(), parent_->children().end(),
-                         [this](const auto &c) { return c.get() == this; });
+                         [this](const axes_object_handle &c) { return c.get() == this; });
         if (it != parent_->children().end()) {
             return 100 * (1 + it - parent_->children().begin());
         } else {
@@ -93,10 +96,10 @@ namespace matplot {
             if (lighting_) {
                 ss << " lighting";
                 if (primary_ >= 0) {
-                    ss << " primary " << std::clamp(primary_, 0.f, 1.f);
+                    ss << " primary " << clamp(primary_, 0.f, 1.f);
                 }
                 if (specular_ >= 0) {
-                    ss << " specular " << std::clamp(specular_, 0.f, 1.f);
+                    ss << " specular " << clamp(specular_, 0.f, 1.f);
                 }
             }
 
@@ -181,8 +184,10 @@ namespace matplot {
                                          : contour_levels_;
 
             // line types for contour
-            auto [min_level_it, max_level_it] = std::minmax_element(
+            auto ret = std::minmax_element(
                 contour_values_.begin(), contour_values_.end());
+            auto min_level_it = ret.first;
+            auto max_level_it = ret.second;
             for (size_t i = 0; i < n_contour_lines; ++i) {
                 // ss << "    set linetype " << i + line_index + 1;
                 ss << "    set linetype " << i + 1;
@@ -341,7 +346,7 @@ namespace matplot {
         return ss.str();
     }
 
-    std::string surface::legend_string(std::string_view title) {
+    std::string surface::legend_string(matplot::string_view title) {
         return " keyentry " +
                line_spec_.plot_string(
                    line_spec::style_to_plot::plot_line_only) +
@@ -590,7 +595,7 @@ namespace matplot {
         }
     }
 
-    class surface &surface::line_style(std::string_view str) {
+    class surface &surface::line_style(matplot::string_view str) {
         line_spec_.parse_string(str);
         touch();
         return *this;
@@ -776,8 +781,8 @@ namespace matplot {
     }
 
     float surface::font_size() const {
-        if (font_size_) {
-            return *font_size_;
+        if (font_size_>0) {
+            return font_size_;
         } else {
             return parent_->font_size();
         }
@@ -790,14 +795,14 @@ namespace matplot {
     }
 
     const std::string surface::font() const {
-        if (font_) {
-            return *font_;
+        if (font_.size() > 0) {
+            return font_;
         } else {
             return parent_->font();
         }
     }
 
-    class surface &surface::font(std::string_view font) {
+    class surface &surface::font(matplot::string_view font) {
         font_ = font;
         touch();
         return *this;
@@ -805,7 +810,7 @@ namespace matplot {
 
     const std::string &surface::font_weight() const { return font_weight_; }
 
-    class surface &surface::font_weight(std::string_view font_weight) {
+    class surface &surface::font_weight(matplot::string_view font_weight) {
         font_weight_ = font_weight;
         touch();
         return *this;
@@ -819,7 +824,7 @@ namespace matplot {
         return *this;
     }
 
-    class surface &surface::font_color(std::string_view fc) {
+    class surface &surface::font_color(matplot::string_view fc) {
         font_color(to_array(fc));
         return *this;
     }

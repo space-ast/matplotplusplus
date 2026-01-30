@@ -39,6 +39,11 @@
 
 namespace matplot {
 
+    // {left bottom right top}
+    std::array<float, 4> axes_type::default_subplot_inset{.2f, .18f, .04f, .1f};
+    // {x, y, width, height}
+    std::array<float, 4> axes_type::default_axes_position{.13f, .11f, .775f, .815f};
+
     void axes_type::draw() { parent_->draw(); }
 
     void axes_type::touch() { parent_->touch(); }
@@ -199,7 +204,10 @@ namespace matplot {
         constexpr double extra_for_ticks = 0.05;
         if (cb_axis_.visible() && !cb_inside_) {
             // identify if colorbar is north/south/east/west
-            auto [cbx, cby, cbw, cbh] = cb_position_;
+            auto cbx = cb_position_[0];
+            auto cby = cb_position_[1];
+            auto cbw = cb_position_[2];
+            auto cbh = cb_position_[3];
             bool automatic_position = cbw == cbh;
             if (automatic_position) {
                 if (cb_vertical_) {
@@ -249,9 +257,8 @@ namespace matplot {
         include_comment("Axes position");
         run_command("set origin " + std::to_string(x_origin()) + "," +
                     std::to_string(y_origin()));
-
-        auto [bg_width, bg_height, lmargin, rmargin, bmargin, tmargin] =
-            calculate_margins();
+        double bg_width, bg_height, lmargin, rmargin, bmargin, tmargin;
+        std::tie(bg_width, bg_height, lmargin, rmargin, bmargin, tmargin) = calculate_margins();
 
         run_command("set size " + num2str(bg_width) + "," + num2str(bg_height));
 
@@ -559,7 +566,11 @@ namespace matplot {
                 if (cb_position_[2] == 0. && cb_position_[3] == 0.) {
                     ss << " default";
                 } else {
-                    auto [x, y, w, h] = position_;
+                    auto x = position_[0];
+                    auto y = position_[1];
+                    auto w = position_[2];
+                    auto h = position_[3];
+
                     ss << " user";
                     ss << " origin " << x + cb_position_[0] * w << ","
                        << y + cb_position_[1] * h;
@@ -992,9 +1003,8 @@ namespace matplot {
     }
 
     void axes_type::run_background_draw_commands() {
-        auto [w, h, lm, rm, bm, tm] = calculate_margins();
-        (void)w;
-        (void)h;
+        double w, h, lm, rm, bm, tm;
+        std::tie(w, h, lm, rm, bm, tm) = calculate_margins();
         double view_width = parent_->backend_->width();
         double x1 = lm * view_width;
         double x2 = rm * view_width;
@@ -1009,9 +1019,8 @@ namespace matplot {
     }
 
     void axes_type::run_box_draw_commands() {
-        auto [w, h, lm, rm, bm, tm] = calculate_margins();
-        (void)w;
-        (void)h;
+        double w, h, lm, rm, bm, tm;
+        std::tie(w, h, lm, rm, bm, tm) = calculate_margins();
         double view_width = parent_->backend_->width();
         double x1 = lm * view_width;
         double x2 = rm * view_width;
@@ -1027,9 +1036,8 @@ namespace matplot {
     void axes_type::run_grid_draw_commands() {}
 
     void axes_type::run_axes_draw_commands() {
-        auto [w, h, lm, rm, bm, tm] = calculate_margins();
-        (void)w;
-        (void)h;
+        double w, h, lm, rm, bm, tm;
+        std::tie(w, h, lm, rm, bm, tm) = calculate_margins();
         double view_width = parent_->backend_->width();
         double view_height = parent_->backend_->height();
         // to draw the x axis we
@@ -1047,7 +1055,7 @@ namespace matplot {
         }
         // clamp values outside x limits
         cx = transform(cx, [&](double x) {
-            return std::clamp(x, xlimits[0], xlimits[1]);
+            return clamp(x, xlimits[0], xlimits[1]);
         });
 
         // convert x values to viewport range
@@ -1104,7 +1112,7 @@ namespace matplot {
         }
         // clamp values outside x limits
         cy = transform(cy, [&](double x) {
-            return std::clamp(x, ylimits[0], ylimits[1]);
+            return clamp(x, ylimits[0], ylimits[1]);
         });
 
         // convert y values to viewport range
@@ -1258,21 +1266,21 @@ namespace matplot {
 
     const std::string &axes_type::xlabel() const { return x_axis_.label(); }
 
-    void axes_type::xlabel(std::string_view str) {
+    void axes_type::xlabel(matplot::string_view str) {
         x_axis_.label(str);
         touch();
     }
 
     const std::string &axes_type::x2label() const { return x2_axis_.label(); }
 
-    void axes_type::x2label(std::string_view str) {
+    void axes_type::x2label(matplot::string_view str) {
         x2_axis_.label(str);
         touch();
     }
 
     const std::string &axes_type::ylabel() const { return y_axis_.label(); }
 
-    void axes_type::ylabel(std::string_view str) {
+    void axes_type::ylabel(matplot::string_view str) {
         y_axis_.label(str);
         touch();
     }
@@ -1281,7 +1289,7 @@ namespace matplot {
         return x_axis_.tick_label_format();
     }
 
-    void axes_type::xtickformat(std::string_view str) {
+    void axes_type::xtickformat(matplot::string_view str) {
         x_axis_.tick_label_format(str);
     }
 
@@ -1289,7 +1297,7 @@ namespace matplot {
         return x2_axis_.tick_label_format();
     }
 
-    void axes_type::x2tickformat(std::string_view str) {
+    void axes_type::x2tickformat(matplot::string_view str) {
         x2_axis_.tick_label_format(str);
     }
 
@@ -1297,7 +1305,7 @@ namespace matplot {
         return y_axis_.tick_label_format();
     }
 
-    void axes_type::ytickformat(std::string_view str) {
+    void axes_type::ytickformat(matplot::string_view str) {
         y_axis_.tick_label_format(str);
     }
 
@@ -1305,7 +1313,7 @@ namespace matplot {
         return y2_axis_.tick_label_format();
     }
 
-    void axes_type::y2tickformat(std::string_view str) {
+    void axes_type::y2tickformat(matplot::string_view str) {
         y2_axis_.tick_label_format(str);
     }
 
@@ -1313,7 +1321,7 @@ namespace matplot {
         return z_axis_.tick_label_format();
     }
 
-    void axes_type::ztickformat(std::string_view str) {
+    void axes_type::ztickformat(matplot::string_view str) {
         z_axis_.tick_label_format(str);
     }
 
@@ -1321,27 +1329,27 @@ namespace matplot {
         return r_axis_.tick_label_format();
     }
 
-    void axes_type::rtickformat(std::string_view str) {
+    void axes_type::rtickformat(matplot::string_view str) {
         r_axis_.tick_label_format(str);
     }
 
     const std::string &axes_type::y2label() const { return y2_axis_.label(); }
 
-    void axes_type::y2label(std::string_view str) {
+    void axes_type::y2label(matplot::string_view str) {
         y2_axis_.label(str);
         touch();
     }
 
     const std::string &axes_type::zlabel() const { return z_axis_.label(); }
 
-    void axes_type::zlabel(std::string_view str) {
+    void axes_type::zlabel(matplot::string_view str) {
         z_axis_.label(str);
         touch();
     }
 
     const std::string &axes_type::rlabel() const { return r_axis_.label(); }
 
-    void axes_type::rlabel(std::string_view str) {
+    void axes_type::rlabel(matplot::string_view str) {
         r_axis_.label(str);
         touch();
     }
@@ -1417,21 +1425,21 @@ namespace matplot {
     }
 
     const std::string &axes_type::font() const {
-        if (font_) {
-            return *font_;
+        if (font_.size()>0) {
+            return font_;
         } else {
             return parent_->font();
         }
     }
 
-    void axes_type::font(std::string_view font) {
+    void axes_type::font(matplot::string_view font) {
         font_ = font;
         touch();
     }
 
     float axes_type::font_size() const {
-        if (font_size_) {
-            return *font_size_;
+        if (font_size_ > 0) {
+            return font_size_;
         } else {
             return parent_->font_size();
         }
@@ -1444,7 +1452,7 @@ namespace matplot {
 
     const std::string &axes_type::font_weight() const { return font_weight_; }
 
-    void axes_type::font_weight(std::string_view font_weight) {
+    void axes_type::font_weight(matplot::string_view font_weight) {
         font_weight_ = font_weight;
         touch();
     }
@@ -1463,7 +1471,7 @@ namespace matplot {
         return title_font_weight_;
     }
 
-    void axes_type::title_font_weight(std::string_view title_font_weight) {
+    void axes_type::title_font_weight(matplot::string_view title_font_weight) {
         title_font_weight_ = title_font_weight;
         touch();
     }
@@ -1480,7 +1488,7 @@ namespace matplot {
         touch();
     }
 
-    void axes_type::color(std::string_view c) { color(string_to_color(c)); }
+    void axes_type::color(matplot::string_view c) { color(string_to_color(c)); }
 
     void axes_type::color(const enum color &c) { color(to_array(c)); }
 
@@ -1570,7 +1578,7 @@ namespace matplot {
         return line_style_order_;
     }
 
-    void axes_type::line_style_order(std::string_view line_style_order) {
+    void axes_type::line_style_order(matplot::string_view line_style_order) {
         line_style_order_ = line_style_order;
         touch();
     }
@@ -1643,14 +1651,24 @@ namespace matplot {
 
     const std::string &axes_type::title() const { return title_; }
 
-    void axes_type::title(std::string_view title) {
+    void axes_type::title(matplot::string_view title) {
         title_ = title;
         title_visible_ = !title.empty();
-        if (parent_->children_.size() == 1 && !parent_->quiet_mode()) {
-            run_title_command();
-            run_command("replot");
-            parent_->flush_commands();
-        } else {
+        if (parent_->backend_->consumes_gnuplot_commands())
+        {
+            if (parent_->children_.size() == 1 && !parent_->quiet_mode())
+            {
+                run_title_command();
+                run_command("replot");
+                parent_->flush_commands();
+            }
+            else
+            {
+                touch();
+            }
+        }
+        else
+        {
             touch();
         }
     }
@@ -2131,9 +2149,10 @@ namespace matplot {
 
     std::array<double, 2> axes_type::xlim() const {
         if (x_axis_.limits_mode_auto()) {
-            auto [xmin, xmax, ymin, ymax] = this->child_limits();
-            (void)ymin;
-            (void)ymax;
+            double xmin, xmax;
+            auto ret = this->child_limits();
+            xmin = ret[0];
+            xmax = ret[1];
             return std::array<double, 2>{xmin, xmax};
         } else {
             return x_axis().limits();
@@ -2156,9 +2175,11 @@ namespace matplot {
 
     std::array<double, 2> axes_type::ylim() const {
         if (y_axis_.limits_mode_auto()) {
-            auto [xmin, xmax, ymin, ymax] = this->child_limits();
-            (void)xmin;
-            (void)xmax;
+            auto ret = this->child_limits();
+            auto xmin = ret[0];
+            auto xmax = ret[1];
+            auto ymin = ret[2];
+            auto ymax = ret[3];
             return std::array<double, 2>{ymin, ymax};
         } else {
             return y_axis().limits();
@@ -2292,13 +2313,13 @@ namespace matplot {
 
     const std::string &axes_type::cblabel() const { return cb_axis_.label(); }
 
-    void axes_type::cblabel(std::string_view str) { cb_axis_.label(str); }
+    void axes_type::cblabel(matplot::string_view str) { cb_axis_.label(str); }
 
     const std::string &axes_type::cbtickformat() const {
         return cb_axis_.tick_label_format();
     }
 
-    void axes_type::cbtickformat(std::string_view str) {
+    void axes_type::cbtickformat(matplot::string_view str) {
         cb_axis_.tick_label_format(str);
     }
 
@@ -2370,7 +2391,7 @@ namespace matplot {
 
     line_handle axes_type::plot(const std::vector<double> &x,
                                 const std::vector<double> &y,
-                                std::string_view line_spec) {
+                                matplot::string_view line_spec) {
         axes_silencer s{this};
         line_handle l = std::make_shared<class line>(this, x, y, line_spec);
         this->emplace_object(l);
@@ -2378,7 +2399,7 @@ namespace matplot {
     }
 
     line_handle axes_type::plot(const std::vector<double> &y,
-                                std::string_view line_spec) {
+                                matplot::string_view line_spec) {
         axes_silencer s{this};
         line_handle l = std::make_shared<class line>(this, y, line_spec);
         this->emplace_object(l);
@@ -2388,7 +2409,7 @@ namespace matplot {
     std::vector<line_handle>
     axes_type::plot(const std::vector<double> &x,
                     const std::vector<std::vector<double>> &Y,
-                    std::string_view line_spec) {
+                    matplot::string_view line_spec) {
         axes_silencer s{this};
         std::vector<line_handle> hs;
         bool previous_replace_status = this->next_plot_replace();
@@ -2402,7 +2423,7 @@ namespace matplot {
 
     std::vector<line_handle>
     axes_type::plot(const std::vector<std::vector<double>> &Y,
-                    std::string_view line_spec) {
+                    matplot::string_view line_spec) {
         axes_silencer s{this};
         std::vector<line_handle> hs;
         bool previous_replace_status = this->next_plot_replace();
@@ -2440,7 +2461,7 @@ namespace matplot {
     line_handle axes_type::plot3(const std::vector<double> &x,
                                  const std::vector<double> &y,
                                  const std::vector<double> &z,
-                                 std::string_view line_spec) {
+                                 matplot::string_view line_spec) {
         axes_silencer s{this};
         line_handle l = std::make_shared<class line>(this, x, y, z, line_spec);
         this->emplace_object(l);
@@ -2450,7 +2471,7 @@ namespace matplot {
     std::vector<line_handle>
     axes_type::plot3(const std::vector<std::vector<double>> &X,
                      const std::vector<std::vector<double>> &Y,
-                     const std::vector<double> &z, std::string_view line_spec) {
+                     const std::vector<double> &z, matplot::string_view line_spec) {
         axes_silencer s{this};
         auto it_x = X.begin();
         auto it_y = Y.begin();
@@ -2470,7 +2491,7 @@ namespace matplot {
     axes_type::plot3(const std::vector<std::vector<double>> &X,
                      const std::vector<std::vector<double>> &Y,
                      const std::vector<std::vector<double>> &Z,
-                     std::string_view line_spec) {
+                     matplot::string_view line_spec) {
         axes_silencer temp_silencer_{this};
         auto it_x = X.begin();
         auto it_y = Y.begin();
@@ -2490,7 +2511,7 @@ namespace matplot {
 
     stair_handle axes_type::stairs(const std::vector<double> &x,
                                    const std::vector<double> &y,
-                                   std::string_view line_spec) {
+                                   matplot::string_view line_spec) {
         axes_silencer temp_silencer_{this};
         stair_handle l = std::make_shared<class stair>(this, x, y, line_spec);
         this->emplace_object(l);
@@ -2498,7 +2519,7 @@ namespace matplot {
     }
 
     stair_handle axes_type::stairs(const std::vector<double> &y,
-                                   std::string_view line_spec) {
+                                   matplot::string_view line_spec) {
         axes_silencer temp_silencer_{this};
         stair_handle l = std::make_shared<class stair>(this, y, line_spec);
         this->emplace_object(l);
@@ -2508,7 +2529,7 @@ namespace matplot {
     std::vector<stair_handle>
     axes_type::stairs(const std::vector<std::vector<double>> &X,
                       const std::vector<std::vector<double>> &Y,
-                      std::string_view line_spec) {
+                      matplot::string_view line_spec) {
         axes_silencer temp_silencer_{this};
         std::vector<stair_handle> hs;
         bool previous_replace_status = this->next_plot_replace();
@@ -2524,7 +2545,7 @@ namespace matplot {
 
     std::vector<stair_handle>
     axes_type::stairs(const std::vector<std::vector<double>> &Y,
-                      std::string_view line_spec) {
+                      matplot::string_view line_spec) {
         axes_silencer temp_silencer_{this};
         std::vector<stair_handle> hs;
         bool previous_replace_status = this->next_plot_replace();
@@ -2539,7 +2560,7 @@ namespace matplot {
     std::vector<stair_handle>
     axes_type::stairs(const std::vector<double> &x,
                       const std::vector<std::vector<double>> &Y,
-                      std::string_view line_spec) {
+                      matplot::string_view line_spec) {
         axes_silencer temp_silencer_{this};
         std::vector<stair_handle> hs;
         bool previous_replace_status = this->next_plot_replace();
@@ -2555,7 +2576,7 @@ namespace matplot {
                                          const std::vector<double> &y,
                                          const std::vector<double> &error,
                                          error_bar::type type,
-                                         std::string_view line_spec) {
+                                         matplot::string_view line_spec) {
         axes_silencer temp_silencer_{this};
         error_bar_handle l = std::make_shared<class error_bar>(
             this, x, y, error, type, line_spec);
@@ -2569,7 +2590,7 @@ namespace matplot {
                                          const std::vector<double> &y_pos_delta,
                                          const std::vector<double> &x_neg_delta,
                                          const std::vector<double> &x_pos_delta,
-                                         std::string_view line_spec) {
+                                         matplot::string_view line_spec) {
         axes_silencer temp_silencer_{this};
         error_bar_handle l = std::make_shared<class error_bar>(
             this, x, y, y_neg_delta, y_pos_delta, x_neg_delta, x_pos_delta,
@@ -2581,7 +2602,7 @@ namespace matplot {
     error_bar_handle axes_type::errorbar(const std::vector<double> &x,
                                          const std::vector<double> &y,
                                          const std::vector<double> &y_error,
-                                         std::string_view line_spec) {
+                                         matplot::string_view line_spec) {
         axes_silencer temp_silencer_{this};
         return this->errorbar(x, y, y_error, error_bar::type::vertical,
                               line_spec);
@@ -2589,7 +2610,7 @@ namespace matplot {
 
     std::vector<filled_area_handle> axes_type::area(
         const std::vector<double> &x, const std::vector<std::vector<double>> &Y,
-        double base_value, bool stacked, std::string_view line_spec) {
+        double base_value, bool stacked, matplot::string_view line_spec) {
         axes_silencer temp_silencer_{this};
         std::vector<filled_area_handle> hs;
         bool previous_state = this->next_plot_replace();
@@ -2606,11 +2627,14 @@ namespace matplot {
         // use reverse iterator in this case because the first Ys should be
         // the ones in the background. The reverse happens for other object
         // types
-        for (auto [Y_it, c_it] = std::make_pair(Y.rbegin(), colors.rbegin());
-             Y_it != Y.rend(); ++Y_it, ++c_it) {
+        auto ret = std::make_pair(Y.rbegin(), colors.rbegin());
+        auto Y_it = ret.first;
+        auto c_it = ret.second;
+
+        for (; Y_it != Y.rend(); ++Y_it, ++c_it) {
             const auto &y = *Y_it;
             auto h = std::make_shared<class filled_area>(
-                this, x, y, std::vector({base_value}), stacked, line_spec);
+                this, x, y, std::vector<double>({base_value}), stacked, line_spec);
             h->line_width(1.0);
             h->face_color(*c_it);
             this->emplace_object(h);
@@ -2624,17 +2648,17 @@ namespace matplot {
     filled_area_handle axes_type::area(const std::vector<double> &x,
                                        const std::vector<double> &y,
                                        double base_value, bool stacked,
-                                       std::string_view line_spec) {
+                                       matplot::string_view line_spec) {
         axes_silencer temp_silencer_{this};
         auto as =
-            this->area(x, std::vector({y}), base_value, stacked, line_spec);
+            this->area(x, std::vector<std::vector<double>>({y}), base_value, stacked, line_spec);
         return as[0];
     }
 
     std::vector<filled_area_handle>
     axes_type::area(const std::vector<std::vector<double>> &Y,
                     double base_value, bool stacked,
-                    std::string_view line_spec) {
+                    matplot::string_view line_spec) {
         axes_silencer temp_silencer_{this};
         return this->area(iota(1., static_cast<double>(Y.begin()->size())), Y,
                           base_value, stacked, line_spec);
@@ -2642,7 +2666,7 @@ namespace matplot {
 
     std::vector<filled_area_handle>
     axes_type::area(const std::vector<std::vector<double>> &Y, bool stacked,
-                    std::string_view line_spec) {
+                    matplot::string_view line_spec) {
         axes_silencer temp_silencer_{this};
         return this->area(iota(1., static_cast<double>(Y.begin()->size())), Y,
                           0., stacked, line_spec);
@@ -2650,7 +2674,7 @@ namespace matplot {
 
     filled_area_handle axes_type::area(const std::vector<double> &y,
                                        double base_value, bool stacked,
-                                       std::string_view line_spec) {
+                                       matplot::string_view line_spec) {
         axes_silencer temp_silencer_{this};
         return this->area(iota(1., static_cast<double>(y.size())), {y},
                           base_value, stacked, line_spec);
@@ -2658,10 +2682,12 @@ namespace matplot {
 
     line_handle axes_type::fimplicit(axes_type::implicit_function_type equation,
                                      const std::array<double, 4> &xy_interval,
-                                     std::string_view line_spec) {
+                                     matplot::string_view line_spec) {
         axes_silencer temp_silencer_{this};
-        auto [X, Y] = meshgrid(linspace(xy_interval[0], xy_interval[1]),
+        auto ret = meshgrid(linspace(xy_interval[0], xy_interval[1]),
                                linspace(xy_interval[2], xy_interval[3]));
+        auto X = ret.first;
+        auto Y = ret.second;
         auto Z = transform(X, Y, equation);
         std::vector<std::pair<vector_1d, vector_1d>> c =
             contourc(X, Y, Z, vector_1d{0.});
@@ -2674,13 +2700,13 @@ namespace matplot {
     }
 
     line_handle axes_type::fimplicit(axes_type::implicit_function_type equation,
-                                     std::string_view line_spec) {
+                                     matplot::string_view line_spec) {
         axes_silencer temp_silencer_{this};
         return this->fimplicit(equation, {-5, 5, -5, 5}, line_spec);
     }
 
-    string_function_handle axes_type::fplot(std::string_view equation,
-                                            std::string_view line_spec) {
+    string_function_handle axes_type::fplot(matplot::string_view equation,
+                                            matplot::string_view line_spec) {
         axes_silencer temp_silencer_{this};
         string_function_handle obj =
             std::make_shared<class string_function>(this, equation, line_spec);
@@ -2708,7 +2734,7 @@ namespace matplot {
 
     function_line_handle axes_type::fplot(function_line::function_type equation,
                                           const std::array<double, 2> &x_range,
-                                          std::string_view line_spec) {
+                                          matplot::string_view line_spec) {
         axes_silencer temp_silencer_{this};
         function_line_handle obj = std::make_shared<class function_line>(
             this, equation, x_range, line_spec);
@@ -2718,7 +2744,7 @@ namespace matplot {
     }
 
     function_line_handle axes_type::fplot(function_line::function_type equation,
-                                          std::string_view line_spec) {
+                                          matplot::string_view line_spec) {
         axes_silencer temp_silencer_{this};
         function_line_handle obj = std::make_shared<class function_line>(
             this, equation, std::array<double, 2>({-5, 5}), line_spec);
@@ -2731,7 +2757,7 @@ namespace matplot {
     axes_type::fplot(function_line::function_type function_x,
                      function_line::function_type function_y,
                      const std::array<double, 2> &t_range,
-                     std::string_view line_spec) {
+                     matplot::string_view line_spec) {
         axes_silencer temp_silencer_{this};
         function_line_handle obj = std::make_shared<class function_line>(
             this, function_x, function_y, t_range, line_spec);
@@ -2771,7 +2797,7 @@ namespace matplot {
                       function_line::function_type function_y,
                       function_line::function_type function_z,
                       const std::array<double, 2> &t_range,
-                      std::string_view line_spec) {
+                      matplot::string_view line_spec) {
         axes_silencer temp_silencer_{this};
         function_line_handle obj = std::make_shared<class function_line>(
             this, function_x, function_y, function_z, t_range, line_spec);
@@ -2848,7 +2874,9 @@ namespace matplot {
         this->xticks(iota(1., static_cast<double>(category_indexes.size())));
 
         std::vector<std::string> unique_categories(category_indexes.size());
-        for (const auto &[category, index] : category_indexes) {
+        for (const auto &iter : category_indexes) {
+            auto& category = iter.first;
+            auto& index = iter.second;
             unique_categories[static_cast<size_t>(round(index) - 1)] = category;
         }
         this->x_axis().ticklabels(unique_categories);
@@ -3018,11 +3046,16 @@ namespace matplot {
                           histogram::binning_algorithm algorithm,
                           enum bin_scatter_style scatter_style,
                           enum histogram::normalization normalization_alg) {
-        auto [min_x, max_x] = std::minmax_element(x.begin(), x.end());
+        auto ret1 = std::minmax_element(x.begin(), x.end());
+        auto min_x = ret1.first;
+        auto max_x = ret1.second;
+
         auto x_edges =
             histogram::histogram_edges(x, *min_x, *max_x, algorithm, false);
 
-        auto [min_y, max_y] = std::minmax_element(y.begin(), y.end());
+        auto ret2 = std::minmax_element(y.begin(), y.end());
+        auto min_y = ret2.first;
+        auto max_y = ret2.second;
         auto y_edges =
             histogram::histogram_edges(y, *min_y, *max_y, algorithm, false);
 
@@ -3045,12 +3078,16 @@ namespace matplot {
                           const std::vector<double> &y, size_t nbins_x,
                           size_t nbins_y, enum bin_scatter_style scatter_style,
                           enum histogram::normalization normalization_alg) {
-        auto [minx, maxx] = std::minmax_element(x.begin(), x.end());
+        auto ret1 = std::minmax_element(x.begin(), x.end());
+        auto minx = ret1.first;
+        auto maxx = ret1.second;
         double xrange = *maxx - *minx;
         auto x_edges =
             histogram::bin_picker(*minx, *maxx, nbins_x, xrange / nbins_x);
 
-        auto [miny, maxy] = std::minmax_element(y.begin(), y.end());
+        auto ret2 = std::minmax_element(y.begin(), y.end());
+        auto miny = ret2.first;
+        auto maxy = ret2.second;
         double yrange = *maxy - *miny;
         auto y_edges =
             histogram::bin_picker(*miny, *maxy, nbins_y, yrange / nbins_y);
@@ -3111,7 +3148,7 @@ namespace matplot {
             for (std::size_t j = 0; j < Y[i].size(); ++j) {
                 if (Y[i][j] < 0) {
                     stacked_positive_values[j] = 0;
-                }
+        }
             }
         }
 
@@ -3123,7 +3160,7 @@ namespace matplot {
             for (std::size_t j = 0; j < Y[i].size(); ++j) {
                 if (Y[i][j] > 0) {
                     stacked_negative_values[j] = 0;
-                }
+        }
             }
         }
 
@@ -3213,7 +3250,8 @@ namespace matplot {
         this->emplace_object(heatmap);
         this->y_axis().reverse(true);
         this->color_box(true);
-        auto [h_, w_] = size(m);
+        size_t h_, w_;
+        std::tie(h_, w_) = size(m);
         this->y_axis().tick_values(iota(1., static_cast<double>(h_)));
         this->y_axis().tick_length(0.);
         this->x_axis().tick_values(iota(1., static_cast<double>(w_)));
@@ -3235,8 +3273,8 @@ namespace matplot {
         pcolor->y(1.5);
         pcolor->always_hide_labels(true);
         this->emplace_object(pcolor);
-
-        auto [h, w] = size(m);
+        size_t h, w;
+        std::tie(h, w) = size(m);
         this->ylim({1, static_cast<double>(h + 1)});
         this->y_axis().tick_values(
             iota(static_cast<double>(1), static_cast<double>(h)));
@@ -3259,7 +3297,7 @@ namespace matplot {
     parallel_lines_handle
     axes_type::parallelplot(const std::vector<std::vector<double>> &X,
                             const std::vector<double> &colors,
-                            std::string_view line_spec) {
+                            matplot::string_view line_spec) {
         axes_silencer temp_silencer_{this};
         parallel_lines_handle l =
             std::make_shared<class parallel_lines>(this, X, line_spec);
@@ -3277,7 +3315,7 @@ namespace matplot {
     /// Parallel plot - default line colors
     parallel_lines_handle
     axes_type::parallelplot(const std::vector<std::vector<double>> &X,
-                            std::string_view line_spec) {
+                            matplot::string_view line_spec) {
         axes_silencer temp_silencer_{this};
         return this->parallelplot(X, std::vector<double>({}), line_spec);
     }
@@ -3424,7 +3462,7 @@ namespace matplot {
                                     const std::vector<double> &z,
                                     const std::vector<double> &sizes,
                                     const std::vector<double> &colors,
-                                    std::string_view line_spec) {
+                                    matplot::string_view line_spec) {
         axes_silencer temp_silencer_{this};
         line_handle l = this->plot3(x, y, z, line_spec);
         if (l->line_spec().marker_style() == line_spec::marker_style::none) {
@@ -3445,7 +3483,7 @@ namespace matplot {
     line_handle axes_type::scatter3(const std::vector<double> &x,
                                     const std::vector<double> &y,
                                     const std::vector<double> &z,
-                                    std::string_view line_spec) {
+                                    matplot::string_view line_spec) {
         axes_silencer temp_silencer_{this};
         return this->scatter3(x, y, z, {}, {}, line_spec);
     }
@@ -3563,11 +3601,13 @@ namespace matplot {
     }
 
     labels_handle
-    axes_type::wordcloud(std::string_view text,
+    axes_type::wordcloud(matplot::string_view text,
                          const std::vector<std::string> &black_list,
-                         std::string_view delimiters, size_t max_cloud_size,
+                         matplot::string_view delimiters, size_t max_cloud_size,
                          const std::vector<double> &custom_colors) {
-        auto [tokens, count] =
+        std::vector<std::string> tokens;
+        std::vector<size_t> count;
+        std::tie(tokens, count) =
             wordcount(text, black_list, delimiters, max_cloud_size);
         return this->wordcloud(tokens, to_vector_1d(count), custom_colors);
     }
@@ -3644,7 +3684,7 @@ namespace matplot {
     /// Core plot function
     line_handle axes_type::stem(const std::vector<double> &x,
                                 const std::vector<double> &y,
-                                std::string_view line_spec) {
+                                matplot::string_view line_spec) {
         axes_silencer temp_silencer_{this};
         line_handle l = this->plot(x, y, line_spec);
         l->impulse(true);
@@ -3654,7 +3694,7 @@ namespace matplot {
 
     /// Basic plot function with automatic x
     line_handle axes_type::stem(const std::vector<double> &y,
-                                std::string_view line_spec) {
+                                matplot::string_view line_spec) {
         axes_silencer temp_silencer_{this};
 
         line_handle l =
@@ -3669,7 +3709,7 @@ namespace matplot {
     std::vector<line_handle>
     axes_type::stem(const std::vector<double> &x,
                     const std::vector<std::vector<double>> &Y,
-                    std::string_view line_spec) {
+                    matplot::string_view line_spec) {
         axes_silencer temp_silencer_{this};
 
         std::vector<line_handle> hs = this->plot(x, Y, line_spec);
@@ -3684,7 +3724,7 @@ namespace matplot {
     /// Plot lists of lists with automatic x
     std::vector<line_handle>
     axes_type::stem(const std::vector<std::vector<double>> &Y,
-                    std::string_view line_spec) {
+                    matplot::string_view line_spec) {
         axes_silencer temp_silencer_{this};
 
         std::vector<line_handle> hs = this->plot(Y, line_spec);
@@ -3700,7 +3740,7 @@ namespace matplot {
     line_handle axes_type::stem3(const std::vector<double> &x,
                                  const std::vector<double> &y,
                                  const std::vector<double> &z,
-                                 std::string_view line_spec) {
+                                 matplot::string_view line_spec) {
         axes_silencer temp_silencer_{this};
         line_handle l = this->plot3(x, y, z, line_spec);
         l->impulse(true);
@@ -3711,7 +3751,7 @@ namespace matplot {
     std::vector<line_handle>
     axes_type::stem3(const std::vector<std::vector<double>> &X,
                      const std::vector<std::vector<double>> &Y,
-                     const std::vector<double> &z, std::string_view line_spec) {
+                     const std::vector<double> &z, matplot::string_view line_spec) {
         axes_silencer temp_silencer_{this};
         auto hs = this->plot3(X, Y, z, line_spec);
         for (auto &h : hs) {
@@ -3722,14 +3762,14 @@ namespace matplot {
 
     /// Stem 3d - Automatic x and y
     line_handle axes_type::stem3(const std::vector<double> &z,
-                                 std::string_view line_spec) {
+                                 matplot::string_view line_spec) {
         return this->stem3(iota(1., static_cast<double>(z.size())),
                            std::vector<double>(z.size(), 1.), z, line_spec);
     }
 
     /// Stem 3d - Automatic x and y - Many Zs
     line_handle axes_type::stem3(const std::vector<std::vector<double>> &Z,
-                                 std::string_view line_spec) {
+                                 matplot::string_view line_spec) {
         axes_silencer temp_silencer_{this};
         std::vector<double> x;
         std::vector<double> y;
@@ -3743,6 +3783,7 @@ namespace matplot {
         }
         return this->stem3(x, y, z, line_spec);
     }
+#if defined PLOT_GEOPLOT
 
     /// Core geoplot function
     circles_handle axes_type::geobubble(const std::vector<double> &latitude,
@@ -3797,12 +3838,16 @@ namespace matplot {
         this->geoplot();
 
         // weighted bin count
-        auto [min_x, max_x] =
+        auto ret1 =
             std::minmax_element(longitude.begin(), longitude.end());
+        auto min_x = ret1.first;
+        auto max_x = ret1.second;
         auto x_edges = histogram::bin_picker(*min_x, *max_x, 200, 0);
 
-        auto [min_y, max_y] =
+        auto ret2 =
             std::minmax_element(latitude.begin(), latitude.end());
+        auto min_y = ret2.first;
+        auto max_y = ret2.second;
         auto y_edges = histogram::bin_picker(*min_y, *max_y, 200, 0);
 
         std::vector<std::vector<double>> bin_counts(
@@ -3858,8 +3903,8 @@ namespace matplot {
                 return std::dynamic_pointer_cast<class line>(child);
             }
         }
-
-        auto [x, y] = world_map_110m();
+        std::vector<double> x, y;
+        std::tie(x, y) = world_map_110m();
         line_handle a = this->plot(x, y);
         a->tag("map");
         color_array land_color = {0.f, 0.9294f, 0.9294f, 0.9294f};
@@ -3881,7 +3926,7 @@ namespace matplot {
     /// Core geoplot function - Plot lines on world map
     line_handle axes_type::geoplot(const std::vector<double> &latitude,
                                    const std::vector<double> &longitude,
-                                   std::string_view line_spec) {
+                                   std::string line_spec) {
         axes_silencer temp_silencer_{this};
         bool p2 = this->next_plot_replace();
         this->geoplot();
@@ -3923,10 +3968,12 @@ namespace matplot {
             double h_km_per_pixel = latitude_kms / h_pixels;
             double min_km_per_pixel = std::min(w_km_per_pixel, h_km_per_pixel);
 
-            auto &[map_x, map_y] = (min_km_per_pixel <= 10) ? world_map_10m()
+            auto &ret = (min_km_per_pixel <= 10) ? world_map_10m()
                                    : (min_km_per_pixel <= 50)
                                        ? world_map_50m()
                                        : world_map_110m();
+            auto& map_x = ret.first;
+            auto& map_y = ret.second;
             std::vector<double> limits_map_x;
             std::vector<double> limits_map_y;
 
@@ -4054,6 +4101,7 @@ namespace matplot {
         this->next_plot_replace(p2);
         return l;
     }
+#endif
 
     void axes_type::axis(const std::array<double, 4> &limits_x_y) {
         this->x_axis().limits({limits_x_y[0], limits_x_y[1]});
@@ -4086,7 +4134,11 @@ namespace matplot {
         }
         float w = this->width() * this->parent()->width();
         float h = this->height() * this->parent()->height();
-        auto [xmin, xmax, ymin, ymax] = this->child_limits();
+        auto ret = this->child_limits();
+        auto xmin = ret[0];
+        auto xmax = ret[1];
+        auto ymin = ret[2];
+        auto ymax = ret[3];
         double xrange = xmax - xmin;
         double yrange = ymax - ymin;
         // new ranges that could make it proportional
@@ -4110,7 +4162,11 @@ namespace matplot {
         if (this->children().empty()) {
             return;
         }
-        auto [xmin, xmax, ymin, ymax] = this->child_limits();
+        auto ret = this->child_limits();
+        auto xmin = ret[0];
+        auto xmax = ret[1];
+        auto ymin = ret[2];
+        auto ymax = ret[3];
         this->x_axis().limits({xmin, xmax});
         this->y_axis().limits({ymin, ymax});
         if (this->is_3d() && !this->is_3d_map()) {
@@ -4152,7 +4208,7 @@ namespace matplot {
     /// Compass plot function
     vectors_handle axes_type::compass(const std::vector<double> &x,
                                       const std::vector<double> &y,
-                                      std::string_view line_spec) {
+                                      matplot::string_view line_spec) {
         axes_silencer temp_silencer_{this};
 
         auto theta = transform(
@@ -4178,8 +4234,8 @@ namespace matplot {
     }
 
     /// Ezpolar - Plot function on polar plot
-    string_function_handle axes_type::ezpolar(std::string_view equation,
-                                              std::string_view line_spec) {
+    string_function_handle axes_type::ezpolar(matplot::string_view equation,
+                                              matplot::string_view line_spec) {
         axes_silencer temp_silencer_{this};
         string_function_handle obj =
             std::make_shared<class string_function>(this, equation, line_spec);
@@ -4217,7 +4273,7 @@ namespace matplot {
     function_line_handle
     axes_type::ezpolar(function_line::function_type equation,
                        const std::array<double, 2> &t_range,
-                       std::string_view line_spec) {
+                       matplot::string_view line_spec) {
         axes_silencer temp_silencer_{this};
 
         function_line_handle obj = std::make_shared<class function_line>(
@@ -4238,7 +4294,7 @@ namespace matplot {
 
     function_line_handle
     axes_type::ezpolar(function_line::function_type equation,
-                       std::string_view line_spec) {
+                       matplot::string_view line_spec) {
         axes_silencer temp_silencer_{this};
 
         function_line_handle obj = std::make_shared<class function_line>(
@@ -4259,7 +4315,7 @@ namespace matplot {
     function_line_handle
     axes_type::ezpolar(function_line::function_type equation,
                        std::vector<double> x_range,
-                       std::string_view line_spec) {
+                       matplot::string_view line_spec) {
         return this->ezpolar(equation, to_array<2>(x_range), line_spec);
     }
 
@@ -4267,7 +4323,7 @@ namespace matplot {
     axes_type::ezpolar(function_line::function_type function_x,
                        function_line::function_type function_y,
                        const std::array<double, 2> &t_range,
-                       std::string_view line_spec) {
+                       matplot::string_view line_spec) {
         axes_silencer temp_silencer_{this};
 
         function_line_handle obj = std::make_shared<class function_line>(
@@ -4289,7 +4345,7 @@ namespace matplot {
     axes_type::ezpolar(function_line::function_type function_x,
                        function_line::function_type function_y,
                        std::vector<double> t_range,
-                       std::string_view line_spec) {
+                       matplot::string_view line_spec) {
         return this->ezpolar(function_x, function_y, to_array<2>(t_range),
                              line_spec);
     }
@@ -4345,7 +4401,7 @@ namespace matplot {
     /// Polar plot - Core function
     line_handle axes_type::polarplot(const std::vector<double> &theta,
                                      const std::vector<double> &rho,
-                                     std::string_view line_spec) {
+                                     matplot::string_view line_spec) {
         axes_silencer temp_silencer_{this};
 
         line_handle l = this->plot(theta, rho, line_spec);
@@ -4364,13 +4420,13 @@ namespace matplot {
 
     /// Polar plot - Automatic theta
     line_handle axes_type::polarplot(const std::vector<double> &rho,
-                                     std::string_view line_spec) {
+                                     matplot::string_view line_spec) {
         return this->polarplot(linspace(0, 2 * pi, rho.size()), rho, line_spec);
     }
 
     /// Polar plot - Complex numbers
     line_handle axes_type::polarplot(const std::vector<std::complex<double>> &z,
-                                     std::string_view line_spec) {
+                                     matplot::string_view line_spec) {
         std::vector<double> theta;
         std::vector<double> rho;
         for (size_t i = 0; i < z.size(); ++i) {
@@ -4385,7 +4441,7 @@ namespace matplot {
                                         const std::vector<double> &rho,
                                         const std::vector<double> &sizes,
                                         const std::vector<double> &colors,
-                                        std::string_view line_spec) {
+                                        matplot::string_view line_spec) {
         axes_silencer temp_silencer_{this};
 
         line_handle l = this->scatter(theta, rho, sizes, colors);
@@ -4407,15 +4463,15 @@ namespace matplot {
     line_handle axes_type::polarscatter(const std::vector<double> &theta,
                                         const std::vector<double> &rho,
                                         double size,
-                                        std::string_view line_spec) {
-        return this->polarscatter(theta, rho, std::vector(theta.size(), size),
+                                        matplot::string_view line_spec) {
+        return this->polarscatter(theta, rho, std::vector<double>(theta.size(), size),
                                   {}, line_spec);
     }
 
     /// Polar scatter - Default size and colors
     line_handle axes_type::polarscatter(const std::vector<double> &theta,
                                         const std::vector<double> &rho,
-                                        std::string_view line_spec) {
+                                        matplot::string_view line_spec) {
         return this->polarscatter(theta, rho, {}, {}, line_spec);
     }
 
@@ -4424,7 +4480,7 @@ namespace matplot {
     axes_type::contour(const std::vector<std::vector<double>> &X,
                        const std::vector<std::vector<double>> &Y,
                        const std::vector<std::vector<double>> &Z,
-                       std::vector<double> levels, std::string_view line_spec,
+                       std::vector<double> levels, matplot::string_view line_spec,
                        size_t n_levels) {
         axes_silencer temp_silencer_{this};
 
@@ -4449,8 +4505,8 @@ namespace matplot {
     axes_type::contour(const std::vector<std::vector<double>> &X,
                        const std::vector<std::vector<double>> &Y,
                        const std::vector<std::vector<double>> &Z,
-                       size_t n_levels, std::string_view line_spec) {
-        return this->contour(X, Y, Z, {}, line_spec, n_levels);
+                       size_t n_levels, matplot::string_view line_spec) {
+        return this->contour(X, Y, Z, std::vector<double>{}, line_spec, n_levels);
     }
 
     /// Contour - Automatic levels and number of levels
@@ -4458,8 +4514,8 @@ namespace matplot {
     axes_type::contour(const std::vector<std::vector<double>> &X,
                        const std::vector<std::vector<double>> &Y,
                        const std::vector<std::vector<double>> &Z,
-                       std::string_view line_spec) {
-        return this->contour(X, Y, Z, 0, line_spec);
+                       matplot::string_view line_spec) {
+        return this->contour(X, Y, Z, (size_t)0, line_spec);
     }
 
     /// Contour filled - Manual levels
@@ -4467,7 +4523,7 @@ namespace matplot {
     axes_type::contourf(const std::vector<std::vector<double>> &X,
                         const std::vector<std::vector<double>> &Y,
                         const std::vector<std::vector<double>> &Z,
-                        std::vector<double> levels, std::string_view line_spec,
+                        std::vector<double> levels, matplot::string_view line_spec,
                         size_t n_levels) {
         axes_silencer temp_silencer_{this};
 
@@ -4484,8 +4540,8 @@ namespace matplot {
     axes_type::contourf(const std::vector<std::vector<double>> &X,
                         const std::vector<std::vector<double>> &Y,
                         const std::vector<std::vector<double>> &Z,
-                        size_t n_levels, std::string_view line_spec) {
-        return this->contourf(X, Y, Z, {}, line_spec, n_levels);
+                        size_t n_levels, matplot::string_view line_spec) {
+        return this->contourf(X, Y, Z, std::vector<double>{}, line_spec, n_levels);
     }
 
     /// Contour filled - Automatic number of levels
@@ -4493,8 +4549,8 @@ namespace matplot {
     axes_type::contourf(const std::vector<std::vector<double>> &X,
                         const std::vector<std::vector<double>> &Y,
                         const std::vector<std::vector<double>> &Z,
-                        std::string_view line_spec) {
-        return this->contourf(X, Y, Z, 0, line_spec);
+                        matplot::string_view line_spec) {
+        return this->contourf(X, Y, Z, (size_t)0, line_spec);
     }
 
     using fcontour_function_type = std::function<double(double, double)>;
@@ -4504,13 +4560,15 @@ namespace matplot {
     contours_handle axes_type::fcontour(fcontour_function_type fn,
                                         const std::array<double, 4> &xy_range,
                                         std::vector<double> levels,
-                                        std::string_view line_spec,
+                                        matplot::string_view line_spec,
                                         size_t n_levels) {
         axes_silencer temp_silencer_{this};
 
         std::vector<double> x = linspace(xy_range[0], xy_range[1]);
         std::vector<double> y = linspace(xy_range[2], xy_range[3]);
-        auto [X, Y] = meshgrid(x, y);
+        auto ret = meshgrid(x, y);
+        auto X = ret.first;
+        auto Y = ret.second;
         vector_2d Z(y.size(), vector_1d(x.size(), 0.));
         for (size_t i = 0; i < y.size(); ++i) {
             for (size_t j = 0; j < x.size(); ++j) {
@@ -4526,21 +4584,21 @@ namespace matplot {
     /// Lambda function contour - Manual number of levels (default = 9)
     contours_handle axes_type::fcontour(fcontour_function_type fn,
                                         size_t n_levels,
-                                        std::string_view line_spec) {
+                                        matplot::string_view line_spec) {
         return this->fcontour(fn, std::array<double, 4>{-5, +5, -5, +5},
                               std::vector<double>{}, line_spec, n_levels);
     }
 
     /// Lambda function contour - Automatic number of levels and levels
     contours_handle axes_type::fcontour(fcontour_function_type fn,
-                                        std::string_view line_spec) {
+                                         matplot::string_view line_spec) {
         return this->fcontour(fn, 9, line_spec);
     }
 
     /// Feather - Core function
     vectors_handle axes_type::feather(const std::vector<double> &u,
                                       const std::vector<double> &v,
-                                      std::string_view line_spec) {
+                                      matplot::string_view line_spec) {
         axes_silencer temp_silencer_{this};
 
         vectors_handle l =
@@ -4567,7 +4625,7 @@ namespace matplot {
                                      const std::vector<double> &u,
                                      const std::vector<double> &v,
                                      const std::vector<double> &c, double scale,
-                                     std::string_view line_spec) {
+                                     matplot::string_view line_spec) {
         axes_silencer temp_silencer_{this};
 
         auto x_copy = x;
@@ -4622,7 +4680,7 @@ namespace matplot {
                                      const std::vector<std::vector<double>> &u,
                                      const std::vector<std::vector<double>> &v,
                                      const std::vector<std::vector<double>> &c,
-                                     double scale, std::string_view line_spec) {
+                                     double scale, matplot::string_view line_spec) {
         return this->quiver(flatten(x), flatten(y), flatten(u), flatten(v),
                             (c.empty()) ? std::vector<double>{} : flatten(c),
                             scale, line_spec);
@@ -4633,7 +4691,7 @@ namespace matplot {
                                      const std::vector<std::vector<double>> &y,
                                      const std::vector<std::vector<double>> &u,
                                      const std::vector<std::vector<double>> &v,
-                                     double scale, std::string_view line_spec) {
+                                     double scale, matplot::string_view line_spec) {
         return this->quiver(x, y, u, v, std::vector<std::vector<double>>{},
                             scale, line_spec);
     }
@@ -4643,7 +4701,7 @@ namespace matplot {
                                      const std::vector<double> &y,
                                      const std::vector<double> &u,
                                      const std::vector<double> &v, double scale,
-                                     std::string_view line_spec) {
+                                     matplot::string_view line_spec) {
         return this->quiver(x, y, u, v, std::vector<double>{}, scale,
                             line_spec);
     }
@@ -4654,7 +4712,7 @@ namespace matplot {
         const std::vector<double> &z, const std::vector<double> &u,
         const std::vector<double> &v, const std::vector<double> &w,
         const std::vector<double> &c, double scale,
-        std::string_view line_spec) {
+        matplot::string_view line_spec) {
         axes_silencer temp_silencer_{this};
 
         auto x_copy = x;
@@ -4728,7 +4786,7 @@ namespace matplot {
                                       const std::vector<std::vector<double>> &w,
                                       const std::vector<std::vector<double>> &c,
                                       double scale,
-                                      std::string_view line_spec) {
+                                      matplot::string_view line_spec) {
         return this->quiver3(flatten(x), flatten(y), flatten(z), flatten(u),
                              flatten(v), flatten(w),
                              (c.empty()) ? std::vector<double>{} : flatten(c),
@@ -4743,7 +4801,7 @@ namespace matplot {
                                       const std::vector<std::vector<double>> &v,
                                       const std::vector<std::vector<double>> &w,
                                       double scale,
-                                      std::string_view line_spec) {
+                                      matplot::string_view line_spec) {
         return this->quiver3(flatten(x), flatten(y), flatten(z), flatten(u),
                              flatten(v), flatten(w), scale, line_spec);
     }
@@ -4755,11 +4813,14 @@ namespace matplot {
                                       const std::vector<std::vector<double>> &w,
                                       const std::vector<std::vector<double>> &c,
                                       double scale,
-                                      std::string_view line_spec) {
-        auto [n, p] = size(z);
+                                      matplot::string_view line_spec) {
+        size_t n, p;
+        std::tie(n, p) = size(z);
         vector_1d x = iota(1., static_cast<double>(p));
         vector_1d y = iota(1., static_cast<double>(n));
-        auto [xx, yy] = meshgrid(x, y);
+        auto ret = meshgrid(x, y);
+        auto xx = ret.first;
+        auto yy = ret.second;
         return this->quiver3(xx, yy, z, u, v, w, c, scale, line_spec);
     }
 
@@ -4769,7 +4830,7 @@ namespace matplot {
                                       const std::vector<std::vector<double>> &v,
                                       const std::vector<std::vector<double>> &w,
                                       double scale,
-                                      std::string_view line_spec) {
+                                      matplot::string_view line_spec) {
         return this->quiver3(z, u, v, w, std::vector<std::vector<double>>{},
                              scale, line_spec);
     }
@@ -4779,7 +4840,7 @@ namespace matplot {
         const std::vector<double> &x, const std::vector<double> &y,
         const std::vector<double> &z, const std::vector<double> &u,
         const std::vector<double> &v, const std::vector<double> &w,
-        double scale, std::string_view line_spec) {
+        double scale, matplot::string_view line_spec) {
         auto l = this->quiver3(x, y, z, u, v, w, std::vector<double>{}, scale,
                                line_spec);
         return l;
@@ -4813,7 +4874,9 @@ namespace matplot {
             linspace(x_range[0], x_range[1], static_cast<size_t>(mesh_density));
         std::vector<double> y =
             linspace(y_range[0], y_range[1], static_cast<size_t>(mesh_density));
-        auto [X, Y] = meshgrid(x, y);
+        auto ret = meshgrid(x, y);
+        auto X = ret.first;
+        auto Y = ret.second;
         auto Z = transform(X, Y, fn);
         surface_handle l = this->mesh(X, Y, Z, {});
 
@@ -4833,7 +4896,9 @@ namespace matplot {
             linspace(u_range[0], u_range[1], static_cast<size_t>(mesh_density));
         std::vector<double> v =
             linspace(v_range[0], v_range[1], static_cast<size_t>(mesh_density));
-        auto [U, V] = meshgrid(u, v);
+        auto ret = meshgrid(u, v);
+        auto U = ret.first;
+        auto V = ret.second;
         auto X = transform(U, V, funx);
         auto Y = transform(U, V, funy);
         auto Z = transform(U, V, funz);
@@ -4887,7 +4952,7 @@ namespace matplot {
     surface_handle axes_type::fsurf(fcontour_function_type fn,
                                     const std::array<double, 2> &x_range,
                                     const std::array<double, 2> &y_range,
-                                    std::string_view line_spec,
+                                    matplot::string_view line_spec,
                                     double mesh_density) {
         axes_silencer temp_silencer_{this};
 
@@ -4895,7 +4960,9 @@ namespace matplot {
             linspace(x_range[0], x_range[1], static_cast<size_t>(mesh_density));
         std::vector<double> y =
             linspace(y_range[0], y_range[1], static_cast<size_t>(mesh_density));
-        auto [X, Y] = meshgrid(x, y);
+        auto ret = meshgrid(x, y);
+        auto X = ret.first;
+        auto Y = ret.second;
         auto Z = transform(X, Y, fn);
         surface_handle l = this->surf(X, Y, Z, {}, line_spec);
 
@@ -4909,7 +4976,7 @@ namespace matplot {
                                     fcontour_function_type funz,
                                     const std::array<double, 2> &u_range,
                                     const std::array<double, 2> &v_range,
-                                    std::string_view line_spec,
+                                    matplot::string_view line_spec,
                                     double mesh_density) {
         axes_silencer temp_silencer_{this};
 
@@ -4917,7 +4984,9 @@ namespace matplot {
             linspace(u_range[0], u_range[1], static_cast<size_t>(mesh_density));
         std::vector<double> v =
             linspace(v_range[0], v_range[1], static_cast<size_t>(mesh_density));
-        auto [U, V] = meshgrid(u, v);
+        auto ret = meshgrid(u, v);
+        auto U = ret.first;
+        auto V = ret.second;
         auto X = transform(U, V, funx);
         auto Y = transform(U, V, funy);
         auto Z = transform(U, V, funz);
@@ -4930,7 +4999,7 @@ namespace matplot {
     /// Grid / Both ranges in the same array size 4
     surface_handle axes_type::fsurf(fcontour_function_type fn,
                                     const std::array<double, 4> &xy_range,
-                                    std::string_view line_spec,
+                                    matplot::string_view line_spec,
                                     double mesh_density) {
         return this->fsurf(fn, {xy_range[0], xy_range[1]},
                            {xy_range[2], xy_range[3]}, line_spec, mesh_density);
@@ -4941,7 +5010,7 @@ namespace matplot {
                                     fcontour_function_type funy,
                                     fcontour_function_type funz,
                                     const std::array<double, 4> &uv_range,
-                                    std::string_view line_spec,
+                                    matplot::string_view line_spec,
                                     double mesh_density) {
         return this->fsurf(funx, funy, funz, {uv_range[0], uv_range[1]},
                            {uv_range[2], uv_range[3]}, line_spec, mesh_density);
@@ -4951,7 +5020,7 @@ namespace matplot {
     /// Grid / Both ranges in the same array size 2
     surface_handle axes_type::fsurf(fcontour_function_type fn,
                                     const std::array<double, 2> &xy_range,
-                                    std::string_view line_spec,
+                                    matplot::string_view line_spec,
                                     double mesh_density) {
         return this->fsurf(fn, xy_range, xy_range, line_spec, mesh_density);
     }
@@ -4962,7 +5031,7 @@ namespace matplot {
                                     fcontour_function_type funy,
                                     fcontour_function_type funz,
                                     const std::array<double, 2> &uv_range,
-                                    std::string_view line_spec,
+                                    matplot::string_view line_spec,
                                     double mesh_density) {
         return this->fsurf(funx, funy, funz, uv_range, uv_range, line_spec,
                            mesh_density);
@@ -5034,7 +5103,7 @@ namespace matplot {
                                    const std::vector<std::vector<double>> &Y,
                                    const std::vector<std::vector<double>> &Z,
                                    const std::vector<std::vector<double>> &C,
-                                   std::string_view line_spec) {
+                                   matplot::string_view line_spec) {
         axes_silencer temp_silencer_{this};
 
         surface_handle l =
@@ -5077,7 +5146,7 @@ namespace matplot {
     network_handle
     axes_type::graph(const std::vector<std::pair<size_t, size_t>> &edges,
                      const std::vector<double> &weights, size_t n_vertices,
-                     std::string_view line_spec) {
+                     matplot::string_view line_spec) {
         axes_silencer temp_silencer_{this};
 
         network_handle l = std::make_shared<class network>(
@@ -5097,7 +5166,7 @@ namespace matplot {
 
     network_handle
     axes_type::graph(const std::vector<std::pair<size_t, size_t>> &edges,
-                     std::string_view line_spec) {
+                     matplot::string_view line_spec) {
         return this->graph(edges, vector_1d{}, 0, line_spec);
     }
 
@@ -5294,14 +5363,14 @@ namespace matplot {
     }
 
     /// Annotate plot with single text
-    labels_handle axes_type::text(double x, double y, std::string_view str) {
-        return this->text(std::vector{x}, std::vector{y},
-                          std::vector{std::string(str)});
+    labels_handle axes_type::text(double x, double y, matplot::string_view str) {
+        return this->text(std::vector<double>{x}, std::vector<double>{y},
+                          std::vector<std::string>{std::string(str)});
     }
 
     /// Annotate plot with same text at many positions
     labels_handle axes_type::text(const vector_1d &x, const vector_1d &y,
-                                  std::string_view str) {
+                                  matplot::string_view str) {
         return this->text(x, y,
                           std::vector<std::string>(x.size(), std::string(str)));
     }
@@ -5331,7 +5400,7 @@ namespace matplot {
         bool p2 = this->next_plot_replace();
         this->next_plot_replace(false);
 
-        auto l = this->plot(std::vector{x1, x2}, std::vector{y1, y2}, "-k");
+        auto l = this->plot(std::vector<double>{x1, x2}, std::vector<double>{y1, y2}, "-k");
         l->line_width(1.5);
 
         this->next_plot_replace(p2);
@@ -5341,7 +5410,7 @@ namespace matplot {
     /// Annotate plot with text and arrow
     std::pair<labels_handle, vectors_handle>
     axes_type::textarrow(double x1, double y1, double x2, double y2,
-                         std::string_view str) {
+                         matplot::string_view str) {
         axes_silencer temp_silencer_{this};
         bool p2 = this->next_plot_replace();
         this->next_plot_replace(false);
@@ -5374,10 +5443,15 @@ namespace matplot {
             double radius = min(w, h) * 0.5 * curvature;
 
             // Rounded corners
-            auto [xne, yne] = pol2cart(linspace(0, pi / 2), radius);
-            auto [xnw, ynw] = pol2cart(linspace(pi / 2, pi), radius);
-            auto [xsw, ysw] = pol2cart(linspace(pi, 3 * pi / 2), radius);
-            auto [xse, yse] = pol2cart(linspace(3 * pi / 2, 2 * pi), radius);
+            vector_1d xne, yne;
+            vector_1d xnw, ynw;
+            vector_1d xsw, ysw;
+            vector_1d xse, yse;
+
+            std::tie(xne, yne) = pol2cart(linspace(0, pi / 2), radius);
+            std::tie(xnw, ynw) = pol2cart(linspace(pi / 2, pi), radius);
+            std::tie(xsw, ysw) = pol2cart(linspace(pi, 3 * pi / 2), radius);
+            std::tie(xse, yse) = pol2cart(linspace(3 * pi / 2, 2 * pi), radius);
 
             // Use corners
             std::vector<double> x_;
@@ -5415,7 +5489,7 @@ namespace matplot {
 
     std::pair<labels_handle, line_handle>
     axes_type::textbox(double x, double y, double w, double h,
-                       std::string_view str) {
+                       matplot::string_view str) {
         axes_silencer temp_silencer_{this};
         bool p2 = this->next_plot_replace();
         this->next_plot_replace(false);
@@ -5429,7 +5503,7 @@ namespace matplot {
     }
 
     line_handle axes_type::fill(const vector_1d &x, const vector_1d &y,
-                                std::string_view line_spec) {
+                                matplot::string_view line_spec) {
         axes_silencer temp_silencer_{this};
         bool p2 = this->next_plot_replace();
         this->next_plot_replace(false);
@@ -5447,7 +5521,9 @@ namespace matplot {
         this->next_plot_replace(false);
 
         auto t = linspace(0, 2 * pi);
-        auto [x_, y_] = elliptic2cart(t, w / 2., h / 2.);
+        auto ret = elliptic2cart(t, w / 2., h / 2.);
+        auto x_ = ret.first;
+        auto y_ = ret.second;
         x_ = transform(x_, [&](double x_) { return x_ + w / 2 + x; });
         y_ = transform(y_, [&](double y_) { return y_ + h / 2 + y; });
         auto l = plot(x_, y_, "-k");
@@ -5519,7 +5595,9 @@ namespace matplot {
         this->xticks(iota(1., static_cast<double>(category_indexes.size())));
 
         std::vector<std::string> unique_categories(category_indexes.size());
-        for (const auto &[category, index] : category_indexes) {
+        for (const auto &iter : category_indexes) {
+            auto& category = iter.first;
+            auto& index = iter.second;
             unique_categories[static_cast<size_t>(round(index) - 1)] = category;
         }
         this->x_axis().ticklabels(unique_categories);
@@ -5537,13 +5615,12 @@ namespace matplot {
         auto ylimits = ylim();
         // clamp
         std::vector<double> cx = transform(
-            x, [&](double x) { return std::clamp(x, xlimits[0], xlimits[1]); });
+            x, [&](double x) { return clamp(x, xlimits[0], xlimits[1]); });
         std::vector<double> cy = transform(
-            y, [&](double y) { return std::clamp(y, ylimits[0], ylimits[1]); });
+            y, [&](double y) { return clamp(y, ylimits[0], ylimits[1]); });
         // normalize
-        auto [w, h, lm, rm, bm, tm] = calculate_margins();
-        (void)w;
-        (void)h;
+        double w, h, lm, rm, bm, tm;
+        std::tie(w, h, lm, rm, bm, tm) = calculate_margins();
         double view_width = parent_->backend_->width();
         double view_xmin = lm * view_width;
         double view_xmax = rm * view_width;

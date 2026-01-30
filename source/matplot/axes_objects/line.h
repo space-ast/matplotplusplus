@@ -19,14 +19,14 @@ namespace matplot {
       public:
         explicit line(class axes_type *parent);
         line(class axes_type *parent, const std::vector<double> &y_data,
-             std::string_view line_spec = "");
+             matplot::string_view line_spec = "");
         line(class axes_type *parent, const std::vector<double> &x_data,
              const std::vector<double> &y_data,
-             std::string_view line_spec = "");
+             matplot::string_view line_spec = "");
         line(class axes_type *parent, const std::vector<double> &x_data,
              const std::vector<double> &y_data,
              const std::vector<double> &z_data,
-             std::string_view line_spec = "");
+             matplot::string_view line_spec = "");
 
         /// If we receive an axes_handle, we can convert it to a raw
         /// pointer because there is no ownership involved here
@@ -40,7 +40,7 @@ namespace matplot {
         void run_draw_commands() override;
 
         std::string plot_string() override;
-        std::string legend_string(std::string_view title) override;
+        std::string legend_string(matplot::string_view title) override;
         std::string data_string() override;
         double xmax() override;
         double xmin() override;
@@ -50,7 +50,7 @@ namespace matplot {
         bool requires_colormap() override;
 
       public /* getters and setters */:
-        class line &line_style(std::string_view line_spec);
+        class line &line_style(matplot::string_view line_spec);
 
         const matplot::line_spec &line_spec() const;
         matplot::line_spec &line_spec();

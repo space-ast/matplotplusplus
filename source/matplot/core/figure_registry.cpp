@@ -32,8 +32,9 @@ namespace matplot {
         /// Find an index for a new handler and register it there
         void register_figure_handle(const figure_handle &h) {
             size_t index_candidate = 1;
-            for (const auto &[index, figure_handle] : global_figure_handles()) {
-                (void) figure_handle;
+            for (const auto& ret : global_figure_handles()) {
+                auto& index = ret.first;
+                auto& figure_handle = ret.second;
                 if (index_candidate != index) {
                     break;
                 }
@@ -44,8 +45,9 @@ namespace matplot {
 
         figure_handle register_figure_handle(bool quiet_mode) {
             size_t index_candidate = 1;
-            for (const auto &[index, figure_handle] : global_figure_handles()) {
-                (void) figure_handle;
+            for (const auto &ret : global_figure_handles()) {
+                auto& index = ret.first;
+                auto& figure_handle = ret.second;
                 if (index_candidate != index) {
                     break;
                 }
@@ -63,6 +65,29 @@ namespace matplot {
         detail::set_current_figure_handle(h);
         return h;
     }
+
+    figure_handle figure(bool quiet_mode)
+    {
+        std::shared_ptr<backend::backend_interface> b = create_default_backend();
+        figure_handle f = figure_no_backend(quiet_mode);
+        f->backend(b);
+        return f;
+    }
+
+    figure_handle figure(size_t figure_index, bool quiet_mode)
+    {
+        auto iter = detail::global_figure_handles().find(figure_index);
+        if (iter != detail::global_figure_handles().end())
+        {
+            return iter->second;
+        }
+        figure_handle h = std::make_shared<class figure_type>(
+            figure_index, quiet_mode
+        );
+        detail::register_figure_handle(figure_index, h);
+        return h;
+    }
+
 
     figure_handle figure(figure_handle h) {
         detail::set_current_figure_handle(h);

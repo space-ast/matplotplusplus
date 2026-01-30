@@ -15,20 +15,19 @@
 #include <numeric>
 #include <sstream>
 #include <string>
-#include <string_view>
 #include <vector>
 
 namespace matplot {
     MATPLOT_EXPORTS
-    bool iequals(std::string_view str1, std::string_view str2);
+    bool iequals(matplot::string_view str1, matplot::string_view str2);
     MATPLOT_EXPORTS
-    bool is_true(std::string_view str);
+    bool is_true(matplot::string_view str);
     MATPLOT_EXPORTS
-    bool is_false(std::string_view str);
+    bool is_false(matplot::string_view str);
     MATPLOT_EXPORTS
     std::string run_and_get_output(const std::string &command);
     MATPLOT_EXPORTS
-    std::string escape(std::string_view label);
+    std::string escape(matplot::string_view label);
 
     inline void ltrim(std::string &s) {
         s.erase(s.begin(), std::find_if(s.begin(), s.end(), [](int ch) {
@@ -70,7 +69,7 @@ namespace matplot {
         }
     }
 
-    template <class T = double> T str2num(std::string_view text) {
+    template <class T = double> T str2num(matplot::string_view text) {
         std::istringstream ss((std::string(text)));
         T result;
         return ss >> result ? result : 0;
@@ -195,53 +194,75 @@ namespace matplot {
 
     namespace detail {
         template <typename T, typename U>
-        using forward_or_copy =
-            std::conditional_t<std::is_same_v<T, U>, const U &, U>;
+        using forward_or_copy = typename
+            std::conditional<std::is_same<T, U>::value, const U &, U>::type;
     }
 
     template <class T>
     detail::forward_or_copy<T, vector_1d> to_vector_1d(const T &v) {
-        if constexpr (std::is_same_v<T, vector_1d>) {
-            return v;
-        } else {
-            using std::begin, std::end;
+        // if constexpr (std::is_same<T, vector_1d>::value) {
+        //     return v;
+        // } else 
+        {
+            //using std::begin, std::end;
             vector_1d r(v.size());
-            std::transform(v.begin(), v.end(), r.begin(), [](const auto &x) {
+            std::transform(v.begin(), v.end(), r.begin(), [](const typename T::value_type &x) {
                 return static_cast<double>(x);
             });
             return r;
         }
     }
 
+    template<>
+    detail::forward_or_copy<vector_1d, vector_1d> 
+    inline to_vector_1d<vector_1d>(const vector_1d &v) {
+       return v;
+    }
+
     template <class T>
     detail::forward_or_copy<T, vector_2d> to_vector_2d(const T &v) {
-        if constexpr (std::is_same_v<T, vector_2d>) {
-            return v;
-        } else {
-            using std::begin, std::end;
+        // if  (std::is_same<T, vector_2d>::value) {
+        //     return v;
+        // } else 
+        {
+            //using std::begin, std::end;
 
             vector_2d r(std::distance(begin(v), end(v)));
             std::transform(
-                begin(v), end(v), r.begin(),
-                [](auto &&e) -> vector_1d { return to_vector_1d(e); });
+                std::begin(v), std::end(v), r.begin(),
+                [](const typename T::value_type &e) -> vector_1d { return to_vector_1d(e); });
             return r;
         }
+    }
+
+    template<>
+    detail::forward_or_copy<vector_2d, vector_2d> 
+    inline to_vector_2d<vector_2d>(const vector_2d &v) {
+       return v;
     }
 
     template <class T>
     detail::forward_or_copy<T, std::vector<vector_2d>>
     to_vector_3d(const T &v) {
-        if constexpr (std::is_same_v<T, std::vector<vector_2d>>) {
-            return v;
-        } else {
-            using std::begin, std::end;
+        // if constexpr (std::is_same<T, std::vector<vector_2d>>::value)
+        // {
+        //     return v;
+        // } else 
+        {
+            //using std::begin, std::end;
 
             std::vector<vector_2d> r(std::distance(begin(v), end(v)));
             std::transform(
-                begin(v), end(v), r.begin(),
-                [](auto &&e) -> vector_2d { return to_vector_2d(e); });
+                std::begin(v), std::end(v), r.begin(),
+                [](const typename T::value_type &e) -> vector_2d { return to_vector_2d(e); });
             return r;
         }
+    }
+
+    template <>
+    detail::forward_or_copy<std::vector<vector_2d>, std::vector<vector_2d>>
+    inline to_vector_3d< std::vector<vector_2d>>(const  std::vector<vector_2d> &v) {
+        return v;
     }
 
     template <class T> inline T norm(const std::vector<T> &v) {
@@ -317,7 +338,7 @@ namespace matplot {
     void rank_elements(T first, T last, T2 rank_input,
                        FN comp = std::less<T>()) {
         using value_and_rank =
-            std::pair<std::remove_reference_t<decltype(*first)> const *,
+            std::pair<typename std::remove_reference<decltype(*first)>::type const *,
                       size_t>;
         std::vector<value_and_rank> v;
         size_t r = 0;
@@ -326,11 +347,12 @@ namespace matplot {
             ++first;
             ++r;
         }
-        std::sort(v.begin(), v.end(), [comp](const auto &a, const auto &b) {
+        std::sort(v.begin(), v.end(), [comp](const value_and_rank &a, const value_and_rank &b) {
             return comp(*a.first, *b.first);
         });
-        for (const auto &[ptr, ranking] : v) {
-            (void)ptr;
+        for (const auto &iter : v) {
+            auto& ptr = iter.first;
+            auto& ranking = iter.second;
             *rank_input = ranking;
             ++rank_input;
         }
@@ -511,8 +533,8 @@ namespace matplot {
 
     MATPLOT_EXPORTS
     std::vector<std::string>
-    tokenize(std::string_view text,
-             std::string_view delimiters = " ',\n\r\t\".!?:");
+    tokenize(matplot::string_view text,
+             matplot::string_view delimiters = " ',\n\r\t\".!?:");
 
     MATPLOT_EXPORTS
     std::pair<std::vector<std::string>, std::vector<size_t>>
@@ -522,25 +544,29 @@ namespace matplot {
 
     MATPLOT_EXPORTS
     std::pair<std::vector<std::string>, std::vector<size_t>>
-    wordcount(std::string_view text, const std::vector<std::string> &black_list,
-              std::string_view delimiters = " ',\n\r\t\".!?:;",
+    wordcount(matplot::string_view text, const std::vector<std::string> &black_list,
+              matplot::string_view delimiters = " ',\n\r\t\".!?:;",
               size_t max_cloud_size = 100);
 
     // Distance from x to the next larger floating point number
     template <class FLOAT>
-    std::enable_if_t<std::is_same_v<FLOAT, float> ||
-                         std::is_same_v<FLOAT, double> ||
-                         std::is_same_v<FLOAT, long double>,
-                     FLOAT>
+    typename std::enable_if<std::is_same<FLOAT, float>::value ||
+                         std::is_same<FLOAT, double>::value ||
+                         std::is_same<FLOAT, long double>::value,
+                     FLOAT>::type
     eps(FLOAT x = 1.) {
         constexpr long double max_long_double =
             std::numeric_limits<long double>::max();
         // std::nexttoward is more precise than std::nextafter
-        if constexpr (std::is_same_v<FLOAT, double>) {
+        if  (std::is_same<FLOAT, double>::value) {
             return std::nexttoward(x, max_long_double) - x;
-        } else if constexpr (std::is_same_v<FLOAT, float>) {
+        }
+        else if (std::is_same<FLOAT, float>::value)
+        {
             return std::nexttowardf(x, max_long_double) - x;
-        } else if constexpr (std::is_same_v<FLOAT, long double>) {
+        }
+        else if (std::is_same<FLOAT, long double>::value)
+        {
             return std::nexttowardl(x, max_long_double) - x;
         } else {
             throw std::logic_error(
@@ -607,7 +633,7 @@ namespace matplot {
         std::size_t calculate_size(const vector_2d &vec) {
             return std::accumulate(
                 vec.begin(), vec.end(), (std::size_t)(0),
-                [](auto cnt, const auto &vec) { return cnt + vec.size(); });
+                [](std::size_t cnt, const vector_2d::value_type &vec) { return cnt + vec.size(); });
         }
 
       public:
@@ -655,7 +681,7 @@ namespace matplot {
                                  it._col_offset == _col_offset;
             }
 
-            auto operator*() const { return (*_vec)(_row_offset, _col_offset); }
+            double operator*() const { return (*_vec)(_row_offset, _col_offset); }
 
             iterator &operator++() {
                 _col_offset++;

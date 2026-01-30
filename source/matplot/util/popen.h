@@ -6,8 +6,9 @@
 #define MATPLOTPLUSPLUS_POPEN_H
 
 #include <string>
-#include <string_view>
+// #include <string_view>
 #include <cstdio> // FILE
+#include <matplot/detail/config.h>
 
 #ifdef _WIN32
 
@@ -82,12 +83,12 @@ class opipe : public common_pipe
 public:
     opipe();
     int open(const std::string &cmd) { return common_pipe::open(cmd, 'w'); }
-    int write(std::string_view data);
-    int flush(std::string_view data = {});
+    int write(matplot::string_view data);
+    int flush(matplot::string_view data = {});
 };
 
 /// Runs the shell command, writes data to its input and waits for completion, returns errno if failed
-int shell_write(const std::string &command, std::string_view data = {});
+int shell_write(const std::string &command, matplot::string_view data = {});
 
 /// Runs the shell command, reads data from its output and waits for completion, returns errno if failed
 int shell_read(const std::string &command, std::string& data);

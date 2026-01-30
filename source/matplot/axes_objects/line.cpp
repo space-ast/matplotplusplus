@@ -13,17 +13,17 @@ namespace matplot {
     line::line(class axes_type *parent) : axes_object(parent) {}
 
     line::line(class axes_type *parent, const std::vector<double> &y_data,
-               std::string_view line_spec)
+               matplot::string_view line_spec)
         : axes_object(parent), line_spec_(this, line_spec), y_data_(y_data) {}
 
     line::line(class axes_type *parent, const std::vector<double> &x_data,
-               const std::vector<double> &y_data, std::string_view line_spec)
+               const std::vector<double> &y_data, matplot::string_view line_spec)
         : axes_object(parent), line_spec_(this, line_spec), y_data_(y_data),
           x_data_(x_data) {}
 
     line::line(class axes_type *parent, const std::vector<double> &x_data,
                const std::vector<double> &y_data,
-               const std::vector<double> &z_data, std::string_view line_spec)
+               const std::vector<double> &z_data, matplot::string_view line_spec)
         : axes_object(parent), line_spec_(this, line_spec), y_data_(y_data),
           x_data_(x_data), z_data_(z_data) {}
 
@@ -132,7 +132,7 @@ namespace matplot {
         return res;
     }
 
-    std::string line::legend_string(std::string_view title) {
+    std::string line::legend_string(matplot::string_view title) {
         if (line_spec_.has_line() && line_spec_.has_non_custom_marker()) {
             return " keyentry " +
                    line_spec_.plot_string(
@@ -257,8 +257,10 @@ namespace matplot {
                 return +(parent_->r_axis().limits()[1] -
                          parent_->r_axis().limits()[0]);
             }
-            auto [min_rho, max_rho] =
+            auto ret =
                 std::minmax_element(y_data_.begin(), y_data_.end());
+            auto min_rho = ret.first;
+            auto max_rho = ret.second;
             if (max_rho != y_data_.end() && min_rho != y_data_.end()) {
                 return +round_polar_max(std::abs(*max_rho));
             } else {
@@ -283,8 +285,10 @@ namespace matplot {
                 return -(parent_->r_axis().limits()[1] -
                          parent_->r_axis().limits()[0]);
             }
-            auto [min_rho, max_rho] =
+            auto ret =
                 std::minmax_element(y_data_.begin(), y_data_.end());
+            auto min_rho = ret.first;
+            auto max_rho = ret.second;
             if (max_rho != y_data_.end() && min_rho != y_data_.end()) {
                 return -round_polar_max(std::abs(*max_rho));
             } else {
@@ -305,8 +309,10 @@ namespace matplot {
                 return +(parent_->r_axis().limits()[1] -
                          parent_->r_axis().limits()[0]);
             }
-            auto [min_rho, max_rho] =
+            auto ret =
                 std::minmax_element(y_data_.begin(), y_data_.end());
+            auto min_rho = ret.first;
+            auto max_rho = ret.second;
             if (max_rho != y_data_.end() && min_rho != y_data_.end()) {
                 return +round_polar_max(std::abs(*max_rho));
             } else {
@@ -327,8 +333,10 @@ namespace matplot {
                 return -(parent_->r_axis().limits()[1] -
                          parent_->r_axis().limits()[0]);
             }
-            auto [min_rho, max_rho] =
+            auto ret =
                 std::minmax_element(y_data_.begin(), y_data_.end());
+            auto min_rho = ret.first;
+            auto max_rho = ret.second;
             if (max_rho != y_data_.end() && min_rho != y_data_.end()) {
                 return -round_polar_max(std::abs(*max_rho));
             } else {
@@ -351,7 +359,7 @@ namespace matplot {
 
     bool line::requires_colormap() { return !marker_colors_.empty(); }
 
-    class line &line::line_style(std::string_view str) {
+    class line &line::line_style(matplot::string_view str) {
         line_spec_.parse_string(str);
         touch();
         return *this;

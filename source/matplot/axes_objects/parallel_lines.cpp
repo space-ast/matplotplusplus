@@ -15,7 +15,7 @@ namespace matplot {
 
     parallel_lines::parallel_lines(class axes_type *parent,
                                    const std::vector<std::vector<double>> &data,
-                                   std::string_view line_spec)
+                                   matplot::string_view line_spec)
         : axes_object(parent), line_spec_(this, line_spec), data_(data) {
         for (size_t i = 0; i < data.size(); ++i) {
             axis_.emplace_back(parent_, true);
@@ -121,7 +121,7 @@ namespace matplot {
         }
     }
 
-    std::string parallel_lines::legend_string(std::string_view title) {
+    std::string parallel_lines::legend_string(matplot::string_view title) {
         return " keyentry " +
                line_spec_.plot_string(
                    line_spec::style_to_plot::plot_line_only) +
@@ -138,8 +138,10 @@ namespace matplot {
         std::vector<double> expanded_X_max;
         std::vector<double> expanded_X_range;
         for (size_t i = 0; i < data_.size(); ++i) {
-            auto [min_it, max_it] =
+            auto ret =
                 std::minmax_element(data_[i].begin(), data_[i].end());
+            auto min_it = ret.first;
+            auto max_it = ret.second;
             X_min.emplace_back(*min_it);
             X_max.emplace_back(*max_it);
             X_range.emplace_back(X_max.back() - X_min.back());
