@@ -2,6 +2,7 @@ target("matplot")
     set_kind("shared")
 
     add_files("**.cpp")
+    add_headerfiles("(matplot/**.h)")
 
     remove_files("matplot/backend/opengl*.cpp")
     remove_files("matplot/util/world_*.cpp")
