@@ -12,6 +12,7 @@ target("matplot")
     add_defines("NOMINMAX")
     add_defines("STRING_VIEW_CONSTEXPR_BUG")
     add_defines("CXX_NO_FILESYSTEM")
+    add_defines("cimg_display=0")
 
     if is_plat("windows") then
         add_syslinks("user32", "gdi32", "shell32")
