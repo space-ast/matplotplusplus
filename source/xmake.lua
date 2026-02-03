@@ -1,5 +1,6 @@
 target("matplot")
     set_kind("shared")
+    set_languages("c++14")
 
     add_files("**.cpp")
     add_headerfiles("(matplot/**.h)")
