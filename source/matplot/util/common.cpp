@@ -877,6 +877,7 @@ namespace matplot {
 
         // Initial calculations
         if (log) {
+            #pragma warning(suppress: 4834)
             std::invalid_argument("Not implemented yet. The library does not "
                                   "need that as it is.");
         }
