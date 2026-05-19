@@ -48,6 +48,9 @@ namespace matplot {
             : box_chart(parent.get(), std::forward<Args>(args)...) {}
 
         virtual ~box_chart() = default;
+
+        MATPLOT_OBJECT_META
+
       public /* xlim object virtual functions */:
         std::string set_variables_string() override;
         std::string plot_string() override;

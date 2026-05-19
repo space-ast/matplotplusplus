@@ -25,6 +25,8 @@ namespace matplot {
             : string_function(parent.get(), std::forward<Args>(args)...) {}
 
       public:
+        MATPLOT_OBJECT_META
+
         std::string plot_string() override;
         std::string data_string() override;
         double xmax() override;

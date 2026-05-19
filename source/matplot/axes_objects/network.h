@@ -34,6 +34,9 @@ namespace matplot {
             : network(parent.get(), std::forward<Args>(args)...) {}
 
         virtual ~network() = default;
+
+        MATPLOT_OBJECT_META
+
       public /* mandatory virtual functions */:
         std::string plot_string() override;
         std::string legend_string(matplot::string_view title) override;

@@ -31,6 +31,8 @@ namespace matplot {
             : filled_area(parent.get(), std::forward<Args>(args)...) {}
 
       public /* override the plotting function for filled_area */:
+        MATPLOT_OBJECT_META
+
         std::string plot_string() override;
         std::string data_string() override;
         enum axes_object::axes_category axes_category() override;

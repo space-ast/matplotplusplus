@@ -36,6 +36,8 @@ namespace matplot {
 
         virtual ~line() = default;
 
+        MATPLOT_OBJECT_META
+
       public /* mandatory virtual functions */:
         void run_draw_commands() override;
 

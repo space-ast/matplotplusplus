@@ -9,6 +9,7 @@
 #include <vector>
 #include <string>
 #include <matplot/detail/config.h>
+#include <matplot/util/visitor.h>
 
 namespace matplot {
     class axes_type;
@@ -46,6 +47,7 @@ namespace matplot {
         bool is_polar();
 
       public /* for the backend */:
+        virtual void accept(visitor& v) = 0;
         virtual void run_draw_commands();
 
       public /* for gnuplot backend only */:

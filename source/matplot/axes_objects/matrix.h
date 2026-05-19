@@ -56,6 +56,8 @@ namespace matplot {
 
         virtual ~matrix() = default;
 
+        MATPLOT_OBJECT_META
+
       public /* mandatory virtual functions */:
         // std::string set_variables_string() override;
         std::string plot_string() override;

@@ -41,6 +41,8 @@ namespace matplot {
             : error_bar(parent.get(), std::forward<Args>(args)...) {}
 
       public /* override the plotting function for error_bar */:
+        MATPLOT_OBJECT_META
+
         std::string set_variables_string() override;
         std::string plot_string() override;
         std::string data_string() override;
