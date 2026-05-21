@@ -72,6 +72,9 @@ namespace matplot {
         const vector_2d &Z_data() const;
         class surface &Z_data(const vector_2d &Z_data);
 
+        const vector_2d &C_data() const;
+        class surface &C_data(const vector_2d &C_data);
+
         size_t norm() const;
         class surface &norm(size_t norm);
 

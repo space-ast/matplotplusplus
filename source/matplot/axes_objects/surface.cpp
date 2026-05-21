@@ -635,6 +635,14 @@ namespace matplot {
         return *this;
     }
 
+    const vector_2d &surface::C_data() const { return C_data_; }
+
+    class surface &surface::C_data(const vector_2d &C_data) {
+        C_data_ = C_data;
+        touch();
+        return *this;
+    }
+
     float surface::line_width() const { return line_spec().line_width(); }
 
     class surface &surface::line_width(float line_width) {
