@@ -88,41 +88,41 @@ namespace matplot {
         bool has_marker_face();
 
         /// \brief True if line, marker, and marker face are the same color
-        [[nodiscard]] bool line_and_marker_are_the_same_color() const;
+        MATPLOT_NODISCARD bool line_and_marker_are_the_same_color() const;
 
         /// \brief True if marker and marker face are the same color
-        [[nodiscard]] bool marker_and_face_are_the_same_color() const;
+        MATPLOT_NODISCARD bool marker_and_face_are_the_same_color() const;
 
         /// Touch the parent element
         void touch();
 
-        [[nodiscard]] const std::array<float, 4> &color() const;
-        [[nodiscard]] float alpha() const;
+        MATPLOT_NODISCARD const std::array<float, 4> &color() const;
+        MATPLOT_NODISCARD float alpha() const;
         void color(const std::array<float, 3> &color);
         void color(const std::array<float, 4> &color);
         void color(std::initializer_list<float> color);
         void color(matplot::string_view color);
         void color(enum color marker_color);
         void alpha(float alpha);
-        [[nodiscard]] bool user_color() const;
+        MATPLOT_NODISCARD bool user_color() const;
         void user_color(bool user_color);
 
-        [[nodiscard]] line_style line_style() const;
+        MATPLOT_NODISCARD line_style line_style() const;
         void line_style(enum line_style line_style);
 
-        [[nodiscard]] float line_width() const;
+        MATPLOT_NODISCARD float line_width() const;
         void line_width(float line_width);
 
-        [[nodiscard]] enum marker_style marker_style() const;
+        MATPLOT_NODISCARD enum marker_style marker_style() const;
         void marker_style(enum marker_style marker_style);
         void marker_style(matplot::string_view marker_style);
-        [[nodiscard]] enum marker_style marker() const;
+        MATPLOT_NODISCARD enum marker_style marker() const;
         template <class T> void marker(T marker) { marker_style(marker); }
 
-        [[nodiscard]] const std::string &custom_marker() const;
+        MATPLOT_NODISCARD const std::string &custom_marker() const;
         void custom_marker(matplot::string_view custom_marker);
 
-        [[nodiscard]] float marker_size() const;
+        MATPLOT_NODISCARD float marker_size() const;
         void marker_size(float marker_size);
 
         const std::array<float, 4> &marker_color() const;

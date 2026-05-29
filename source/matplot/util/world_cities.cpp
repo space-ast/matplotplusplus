@@ -764,7 +764,14 @@ namespace matplot {
     }
 
     std::tuple<std::vector<double>, std::vector<double>, std::vector<std::string>> world_cities(double min_x_distance_per_char, double min_y_distance) {
+#if __cplusplus >= 201703L
         auto [x,y,names] = world_cities();
+#else
+        auto _cities = world_cities();
+        auto &x = std::get<0>(_cities);
+        auto &y = std::get<1>(_cities);
+        auto &names = std::get<2>(_cities);
+#endif
         return clear_overlapping_labels(x,y,names,min_x_distance_per_char,min_y_distance);
     }
 

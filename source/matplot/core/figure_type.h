@@ -290,7 +290,7 @@ namespace matplot {
         void run_multiplot_command();
 
       private:
-        [[nodiscard]] std::string generate_window_title() const;
+        MATPLOT_NODISCARD std::string generate_window_title() const;
 
       private:
         // The default backend for this figure
