@@ -207,7 +207,7 @@ namespace matplot {
                         ss << "  " << z_data_[i];
                     }
                     if (node_labels().size() > i) {
-                        ss << "  " << std::quoted(node_labels_[i]);
+                        ss << "  " << quoted(node_labels_[i]);
                     } else {
                         ss << "  " << i;
                     }
@@ -228,7 +228,7 @@ namespace matplot {
                            << 0.5 * (z_data_[edges_[i].first] +
                                      z_data_[edges_[i].second]);
                     }
-                    ss << "  " << std::quoted(edge_labels_[i]);
+                    ss << "  " << quoted(edge_labels_[i]);
                     ss << "\n";
                 }
             }

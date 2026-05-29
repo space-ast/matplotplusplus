@@ -34,7 +34,6 @@ namespace matplot {
             size_t index_candidate = 1;
             for (const auto& ret : global_figure_handles()) {
                 auto& index = ret.first;
-                auto& figure_handle = ret.second;
                 if (index_candidate != index) {
                     break;
                 }
@@ -47,7 +46,6 @@ namespace matplot {
             size_t index_candidate = 1;
             for (const auto &ret : global_figure_handles()) {
                 auto& index = ret.first;
-                auto& figure_handle = ret.second;
                 if (index_candidate != index) {
                     break;
                 }

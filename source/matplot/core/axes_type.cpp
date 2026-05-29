@@ -2178,6 +2178,8 @@ namespace matplot {
             auto ret = this->child_limits();
             auto xmin = ret[0];
             auto xmax = ret[1];
+            (void) xmin;
+            (void) xmax;
             auto ymin = ret[2];
             auto ymax = ret[3];
             return std::array<double, 2>{ymin, ymax};

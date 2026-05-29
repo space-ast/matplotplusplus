@@ -19,6 +19,18 @@
 #include <limits>
 
 namespace matplot {
+    inline std::string quoted(const std::string &s) {
+        std::string result = "\"";
+        for (const char c : s) {
+            if (c == '"' || c == '\\') {
+                result += '\\';
+            }
+            result += c;
+        }
+        result += '"';
+        return result;
+    }
+
     MATPLOT_EXPORTS
     bool iequals(matplot::string_view str1, matplot::string_view str2);
     MATPLOT_EXPORTS
@@ -352,7 +364,6 @@ namespace matplot {
             return comp(*a.first, *b.first);
         });
         for (const auto &iter : v) {
-            auto& ptr = iter.first;
             auto& ranking = iter.second;
             *rank_input = ranking;
             ++rank_input;

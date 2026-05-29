@@ -32,14 +32,15 @@
  * possible.
  */
 namespace matplot {
+#if __cplusplus >= 201402L
     template <class T1, class... Args>
     auto plot(NotAxesHandle<T1> x, Args&&... args) {
         return gca()->plot(x, std::forward<Args>(args)...);
     }
-
     template <class... Args> auto plot(axes_handle ax, Args&&... args) {
         return ax->plot(std::forward<Args>(args)...);
     }
+#endif
 
     inline line_handle plot(const std::vector<double> &x,
                             const std::vector<double> &y,
@@ -51,7 +52,7 @@ namespace matplot {
                             matplot::string_view line_spec = "") {
         return gca()->plot(y, line_spec);
     }
-
+#if __cplusplus >= 201402L
     template <class... Args>
     auto plot(const std::vector<double> &x, const std::vector<double> &y,
               matplot::string_view line_spec, Args&&... args) {
@@ -69,7 +70,7 @@ namespace matplot {
               Args&&... args) {
         return gca()->plot(y, line_spec, std::forward<Args>(args)...);
     }
-
+#endif
     inline line_handle plot(axes_handle ax, const std::vector<double> &x,
                             const std::vector<double> &y,
                             matplot::string_view line_spec = "") {
@@ -80,7 +81,7 @@ namespace matplot {
                             matplot::string_view line_spec = "") {
         return ax->plot(y, line_spec);
     }
-
+#if __cplusplus >= 201402L
     template <class... Args>
     auto plot(axes_handle ax, const std::vector<double> &x,
               const std::vector<double> &y, matplot::string_view line_spec,
@@ -208,7 +209,7 @@ namespace matplot {
     template <class... Args> auto hist(axes_handle ax, Args&&... args) {
         return ax->hist(std::forward<Args>(args)...);
     }
-
+#endif
     inline size_t morebins(histogram_handle h, double bin_increase = 0.1) {
         return h->morebins(bin_increase);
     }
@@ -216,7 +217,7 @@ namespace matplot {
     inline size_t fewerbins(histogram_handle h, double bin_decrease = 0.1) {
         return h->fewerbins(bin_decrease);
     }
-
+#if __cplusplus >= 201402L
     template <class T1, class... Args>
     auto binscatter(NotAxesHandle<T1> x, Args&&... args) {
         return gca()->binscatter(x, std::forward<Args>(args)...);
@@ -380,6 +381,7 @@ namespace matplot {
     }
 
     inline auto geoplot() { return gca()->geoplot(); }
+#endif
 
     template <class T1, class... Args>
     void geolimits(NotAxesHandle<T1> x, Args&&... args) {
@@ -399,7 +401,7 @@ namespace matplot {
                           const std::array<double, 2> &longitude) {
         ax->geolimits(latitude, longitude);
     }
-
+#if __cplusplus >= 201402L
     template <class T1, class... Args>
     auto geoscatter(NotAxesHandle<T1> x, Args&&... args) {
         return gca()->geoscatter(x, std::forward<Args>(args)...);
@@ -497,7 +499,7 @@ namespace matplot {
     auto fcontour(NotAxesHandle<T1> x, Args&&... args) {
         return gca()->fcontour(x, std::forward<Args>(args)...);
     }
-
+#endif
     inline contours_handle fcontour(axes_type::fcontour_function_type fn,
                                     const std::array<double, 4> &xy_range,
                                     std::vector<double> levels,
@@ -523,7 +525,7 @@ namespace matplot {
                                     matplot::string_view line_spec) {
         return ax->fcontour(fn, line_spec);
     }
-
+#if __cplusplus >= 201402L
     template <class T1, class... Args>
     auto feather(NotAxesHandle<T1> x, Args&&... args) {
         return gca()->feather(x, std::forward<Args>(args)...);
@@ -577,7 +579,7 @@ namespace matplot {
     template <class... Args> auto fsurf(axes_handle ax, Args&&... args) {
         return ax->fsurf(std::forward<Args>(args)...);
     }
-
+#endif
     inline surface_handle fsurf(axes_type::fcontour_function_type fn,
                                 const std::array<double, 2> &x_range,
                                 const std::array<double, 2> &y_range,
@@ -731,7 +733,7 @@ namespace matplot {
                                 double mesh_density = 40) {
         return ax->fsurf(funx, funy, funz, uv_range, line_spec, mesh_density);
     }
-
+#if __cplusplus >= 201402L
     template <class T1, class... Args>
     auto mesh(NotAxesHandle<T1> x, Args&&... args) {
         return gca()->mesh(x, std::forward<Args>(args)...);
@@ -830,7 +832,7 @@ namespace matplot {
     template <class... Args> auto text(axes_handle ax, Args&&... args) {
         return ax->text(std::forward<Args>(args)...);
     }
-
+#endif
     inline labels_handle text(const std::vector<double> &x,
                               const std::vector<double> &y,
                               const std::vector<std::string> &texts) {
@@ -854,7 +856,7 @@ namespace matplot {
                               matplot::string_view str) {
         return ax->text(x, y, str);
     }
-
+#if __cplusplus >= 201402L
     template <class T1, class... Args>
     auto arrow(NotAxesHandle<T1> x, Args&&... args) {
         return gca()->arrow(x, std::forward<Args>(args)...);
@@ -962,7 +964,7 @@ namespace matplot {
     template <class... Args> auto boxchart(axes_handle ax, Args&&... args) {
         return ax->boxchart(std::forward<Args>(args)...);
     }
-
+#endif
     inline void show() { return gcf()->show(); }
 
     inline void show(figure_handle f) { f->show(); }

@@ -67,6 +67,7 @@ namespace matplot {
     MATPLOT_EXPORTS
     std::string to_string(const std::array<float, 3> &c);
 
+#if __cplusplus >= 201402L
     constexpr std::array<float, 4> default_color(size_t index) {
         constexpr size_t num_default_colors = 7;
         size_t color_index = index % num_default_colors;
@@ -89,6 +90,18 @@ namespace matplot {
             return {};
         }
     }
+#else
+    constexpr std::array<float, 4> default_color(std::size_t index) {
+        return (index % 7 == 0) ? std::array<float, 4>{{0, 0, 0.447f, 0.741f}}
+            : (index % 7 == 1) ? std::array<float, 4>{{0, 0.85f, 0.325f, 0.098f}}
+            : (index % 7 == 2) ? std::array<float, 4>{{0, 0.929f, 0.694f, 0.125f}}
+            : (index % 7 == 3) ? std::array<float, 4>{{0, 0.494f, 0.184f, 0.556f}}
+            : (index % 7 == 4) ? std::array<float, 4>{{0, 0.466f, 0.674f, 0.188f}}
+            : (index % 7 == 5) ? std::array<float, 4>{{0, 0.301f, 0.745f, 0.933f}}
+            : (index % 7 == 6) ? std::array<float, 4>{{0, 0.635f, 0.078f, 0.184f}}
+            : std::array<float, 4>{};
+    }
+#endif
 
     namespace palette {
         /*

@@ -246,7 +246,7 @@ namespace matplot {
                           (!is_last_dimension ? -tick_size - 0.01
                                               : +tick_size + 0.01)
                    << "  " << y << "  "
-                   << std::quoted(ticks[dimension].tickLabels[i]) << "\n\n";
+                   << quoted(ticks[dimension].tickLabels[i]) << "\n\n";
             }
             if (dimension == data_.size() - 2) {
                 ss << "e\n";

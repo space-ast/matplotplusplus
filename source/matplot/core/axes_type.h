@@ -1776,7 +1776,7 @@ namespace matplot {
                          matplot::string_view line_spec = "") {
             return plot(to_vector_1d(y), line_spec);
         }
-
+#if __cplusplus >= 201402L
         template <class T1, class T2, class... Args>
         auto plot(const IterableValues<T1> &x, const IterableValues<T2> &y,
                   matplot::string_view line_spec, Args &&...args) {
@@ -1797,7 +1797,7 @@ namespace matplot {
             return plot(to_vector_1d(y), line_spec,
                         std::forward<Args>(args)...);
         }
-
+#endif
         template <class T1, class T2>
         std::vector<line_handle> plot(const IterableValues<T1> &x,
                                       const IterableIterables<T2> &Y,
@@ -1840,7 +1840,7 @@ namespace matplot {
             return plot3(to_vector_2d(X), to_vector_2d(Y), to_vector_2d(Z),
                          line_spec);
         }
-
+#if __cplusplus >= 201402L
         template <class T1, class T2, class T3, class... Args>
         auto plot3(const IterableValues<T1> &x, const IterableValues<T2> &y,
                    const IterableValues<T3> &z, matplot::string_view line_spec,
@@ -1863,7 +1863,7 @@ namespace matplot {
             return plot3(to_vector_1d(z), line_spec,
                          std::forward<Args>(args)...);
         }
-
+#endif
         template <class T1, class T2>
         stair_handle stairs(const IterableValues<T1> &x,
                             const IterableValues<T2> &y,
@@ -1896,6 +1896,7 @@ namespace matplot {
                                          matplot::string_view line_spec = "") {
             return stairs(to_vector_2d(Y), line_spec);
         }
+#if __cplusplus >= 201402L
 
         template <class T1, class T2, class... Args>
         auto stairs(const IterableValues<T1> &x, const IterableValues<T2> &y,
@@ -1917,7 +1918,7 @@ namespace matplot {
             return stairs(to_vector_1d(y), line_spec,
                           std::forward<Args>(args)...);
         }
-
+#endif
         template <class T1, class T2, class T3>
         error_bar_handle
         errorbar(const IterableValues<T1> &x, const IterableValues<T2> &y,
@@ -2684,6 +2685,7 @@ namespace matplot {
         }
 
       public /* template variants of plot functions above  */:
+#if __cplusplus >= 201402L
         /// Loglog is a line plot variant with log on both x and y axes
         template <class... Args> auto loglog(Args &&...args) {
             auto h = this->plot(std::forward<Args>(args)...);
@@ -2705,7 +2707,7 @@ namespace matplot {
             this->y_axis().scale(axis_type::axis_scale::log);
             return h;
         }
-
+#endif
         /// If the user tries to use boxchart instead of boxplot, it also works
         template <class T1, class... Args> box_chart_handle boxchart(Args &&...args) {
             return boxplot(std::forward<Args>(args)...);
@@ -2716,6 +2718,7 @@ namespace matplot {
         template <class... Args> axes_object_handle hist2(Args &&...args) {
             return binscatter(std::forward<Args>(args)...);
         }
+#if __cplusplus >= 201402L
 
         /// Directed graph
         template <class... Args> network_handle digraph(Args &&...args) {
@@ -2723,7 +2726,7 @@ namespace matplot {
             l->directed(true);
             return l;
         }
-
+#endif
         /// Show array as image and scale the colorbar
         template <class... Args> matrix_handle imagesc(Args &&...args) {
             return image(std::forward<Args>(args)..., true);

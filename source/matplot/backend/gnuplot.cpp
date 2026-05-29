@@ -356,23 +356,28 @@ namespace matplot{ namespace backend {
 
     template <typename T>
     void convert_to(matplot::string_view text, T& value) {
+        #if __cplusplus >= 201703L
         std::from_chars(text.data(), text.data() + text.length(), value);
+        #else
+        std::istringstream ss{std::string(text)};
+        ss >> value;
+        #endif
     }
 
     std::tuple<int, int, int> gnuplot::gnuplot_version() {
         constexpr auto version_zero = std::make_tuple(0, 0, 0);
         static auto version = version_zero;
         if (version == version_zero) { // unknown version
-            // const auto version_str = run_and_get_output("gnuplot --version 2>&1");
-            // // gnuplot version_str example: "5.2 patchlevel 6"
-            // const auto major_minor = word_after(version_str, "gnuplot"); // "5.2"
-            // const auto minor = word_after(major_minor, "."); // "2"
-            // const auto patch = word_after(version_str, "patchlevel"); // "6"
-            // if (!major_minor.empty() && !minor.empty() && !patch.empty()) {
-            //     convert_to(major_minor, std::get<0>(version));
-            //     convert_to(minor, std::get<1>(version));
-            //     convert_to(patch, std::get<2>(version));
-            // }
+            const auto version_str = run_and_get_output("gnuplot --version 2>&1");
+            // gnuplot version_str example: "5.2 patchlevel 6"
+            const auto major_minor = word_after(version_str, "gnuplot"); // "5.2"
+            const auto minor = word_after(major_minor, "."); // "2"
+            const auto patch = word_after(version_str, "patchlevel"); // "6"
+            if (!major_minor.empty() && !minor.empty() && !patch.empty()) {
+                convert_to(major_minor, std::get<0>(version));
+                convert_to(minor, std::get<1>(version));
+                convert_to(patch, std::get<2>(version));
+            }
             if (version == version_zero) // still unknown
                 version = {5, 2, 6}; // assume by convention
         }
