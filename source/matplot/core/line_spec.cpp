@@ -493,7 +493,7 @@ namespace matplot {
             std::copy(color.begin(), color.end(), ar.begin());
             marker_face_color(ar);
         } else {
-            std::array<float, 3> ar{};
+            std::array<float, 4> ar{};
             std::copy(color.begin(), color.end(), ar.begin());
             marker_face_color(ar);
         }
